@@ -2,8 +2,6 @@
 
 #include "app/app.hpp"
 #include "imgui/imgui.h"
-#include "renderer/canvas.hpp"
-#include "tileset/tileset.hpp"
 #include "tools/Manager.hpp"
 #include "types.hpp"
 

@@ -1,7 +1,7 @@
 #include "glad/glad.h"
-#include "renderer/canvas.hpp"
+#include "renderer/texture.hpp"
 
-Canvas::Canvas(u16 _w, u16 _h) {
+Texture::Texture(u16 _w, u16 _h) {
 	w = _w;
 	h = _h;
 
@@ -24,12 +24,12 @@ Canvas::Canvas(u16 _w, u16 _h) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-Canvas::~Canvas() {
+Texture::~Texture() {
 	glDeleteTextures(1, &id);
 	id = 0;
 }
 
-void Canvas::Update(Pixel* pixelData) {
+void Texture::Update(Pixel* pixelData) {
 	glBindTexture(GL_TEXTURE_2D, id);
 	// glTexSubImage2D is better to upload the pixels since glTexImage2D basically
 	// deletes the buffer on GPU, reallocates it, and copies the data, and in glTexSubImage2D

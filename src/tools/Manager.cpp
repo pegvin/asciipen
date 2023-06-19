@@ -1,6 +1,6 @@
 #include "imgui/imgui.h"
 #include "pixel/pixel.hpp"
-#include "renderer/canvas.hpp"
+#include "renderer/texture.hpp"
 #include "tileset/tileset.hpp"
 #include "tools/Manager.hpp"
 
@@ -54,7 +54,7 @@ static u32      DocCols   = 0;
 static u32      DocWidthPixels = 0;
 static u32      DocHeightPixels = 0;
 static Pixel*   DocRender = nullptr;
-static Canvas*  DocTex = nullptr;
+static Texture*  DocTex = nullptr;
 static TileSet* DocTSet = nullptr;
 
 ImTextureID Manager::GetDocTex() {
@@ -78,7 +78,7 @@ void Manager::CreateNew(
 	DocWidthPixels = DocRows * DocTSet->tileWidth;
 	DocHeightPixels = DocCols * DocTSet->tileHeight;
 	DocRender = new Pixel[DocWidthPixels * DocHeightPixels];
-	DocTex = new Canvas(DocWidthPixels, DocHeightPixels);
+	DocTex = new Texture(DocWidthPixels, DocHeightPixels);
 
 	for (u32 i = 0; i < DocWidthPixels * DocHeightPixels; i++) {
 		DocRender[i] = { 0, 0, 0, 255 };
