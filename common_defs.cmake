@@ -12,6 +12,13 @@ else()
 	add_definitions(-D_NDEBUG)
 endif()
 
+# Enable All Warnings
+if(MSVC)
+	target_compile_options(${TARGET_NAME} PRIVATE /W4 /Wall)
+else()
+	target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
 if(CMAKE_CXX_BYTE_ORDER STREQUAL "BIG_ENDIAN")
 	add_definitions(-DTARGET_IS_BIGENDIAN=1)
 endif()
