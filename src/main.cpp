@@ -10,14 +10,11 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	ImGuiIO& io = ImGui::GetIO();
-
 	Manager::CreateNew(
 		40, 25, 16, 16, 16, 16,
 		"./data/tilesets/Commodore_64.png"
 	);
 	Manager::SetViewPortScale(1);
-	const ImVec4& vp = Manager::GetViewPort();
 
 	while (!App::ShouldClose()) {
 		App::NewFrame();

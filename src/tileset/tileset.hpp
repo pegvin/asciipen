@@ -19,7 +19,7 @@ struct TileSet {
 		u16 x, u16 y,
 		Pixel* destBuffer,
 		u16 dBuffX, u16 dBuffY,
-		u16 dBuffWidth, u16 dBuffHeight
+		u16 dBuffWidth
 	);
 
 	Pixel* TileAt(u16 i);

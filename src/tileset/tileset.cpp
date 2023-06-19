@@ -18,14 +18,12 @@ void TileSet::LoadFrom(const char* filePath, u16 rows, u16 cols, u16 _tWidth, u1
 	tileSetHeight = cols;
 	tileWidth = _tWidth;
 	tileHeight = _tHeight;
-	u32 totalTiles = rows * cols; // total tiles
-	u32 tileTotalPixel = tileWidth * tileHeight * 4; // total pixels in 1 tile
 
 	if (tiles) delete[] tiles;
 
 	tiles = new Pixel[w * h];
-	for (u32 y = 0; y < h; ++y) {
-		for (u32 x = 0; x < w; ++x) {
+	for (i32 y = 0; y < h; ++y) {
+		for (i32 x = 0; x < w; ++x) {
 			u8* _src = pixels + (y * w + x) * 4;
 			tiles[(y * w) + x] = {
 				*(_src + 0),
@@ -43,7 +41,7 @@ void TileSet::CopyTile(
 	u16 tX, u16 tY,
 	Pixel* destBuffer,
 	u16 dBuffX, u16 dBuffY,
-	u16 dBuffWidth, u16 dBuffHeight
+	u16 dBuffWidth
 ) {
 	for (u32 y = 0; y < tileHeight; ++y) {
 		u32 scaledX = tX * tileWidth;

@@ -54,7 +54,7 @@ static u32      DocCols   = 0;
 static u32      DocWidthPixels = 0;
 static u32      DocHeightPixels = 0;
 static Pixel*   DocRender = nullptr;
-static Texture*  DocTex = nullptr;
+static Texture* DocTex = nullptr;
 static TileSet* DocTSet = nullptr;
 
 ImTextureID Manager::GetDocTex() {
@@ -120,7 +120,7 @@ void Manager::ProcessFrame() {
 			DocTSet->CopyTile(
 				1, 0, DocRender,
 				MousePosRel.x * DocTSet->tileWidth, MousePosRel.y * DocTSet->tileHeight,
-				DocWidthPixels, DocHeightPixels
+				DocWidthPixels
 			);
 			DocTex->Update(DocRender);
 		}

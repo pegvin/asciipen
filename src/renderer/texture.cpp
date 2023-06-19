@@ -12,7 +12,7 @@ Texture::Texture(u16 _w, u16 _h) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	Pixel* data = new Pixel[w * h]{ 0, 0, 0, 0 };
+	Pixel* data = new Pixel[w * h]{{0, 0, 0, 0}};
 	// initially upload blank data so GPU has allocated space for the image.
 	glTexImage2D(
 		GL_TEXTURE_2D, 0, GL_RGBA, w, h,
