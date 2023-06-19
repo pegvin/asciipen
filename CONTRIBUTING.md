@@ -22,8 +22,7 @@ if you are a developer and want to contribute to the asciipen codebase read more
   - Casts: C-style casts in most cases if possible
 - **Make sure your directory/file structure is:**
   - `.cpp`, `.c` files contain implementation of a feature/bug
-  - `.h` files contain the publicly available function available by that corresponding `.cpp` / `.c` file
-  - if there are more than 2 files for a particular implementation it should be transferred into it's own directory as done with [`src/ifileio`](./src/ifileio).
+  - `.hpp`, `.h` files contain the publicly available function available by that corresponding `.cpp` / `.c` file
 - **Follow [KISS Principle](https://en.wikipedia.org/wiki/KISS_principle)**: make sure your contribution **K**eeps **I**t **S**imple **S**tupid, the more simple the codebase the more it's easy for everyone to understand, if you are writing too many comments then it's time to re-think cause it's probably not simple but stupid.
 
 ## Copyright / Contributor License Agreement
