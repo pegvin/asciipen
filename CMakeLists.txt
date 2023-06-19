@@ -22,8 +22,6 @@ if(WIN32)
 	set(SRC_FILES ${SRC_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/data/windows.rc)
 endif()
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/common_defs.cmake)
-
 if(APPLE AND BUILD_APPLE_BUNDLE)
 	add_executable(asciipen MACOSX_BUNDLE ${SRC_FILES})
 	set_source_files_properties(
@@ -52,6 +50,7 @@ if(WIN32)
 	)
 endif()
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/common_defs.cmake)
 
 # GLFW Configuration
 set(BUILD_SHARED_LIBS   OFF CACHE INTERNAL "")
