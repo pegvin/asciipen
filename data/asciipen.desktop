@@ -4,6 +4,7 @@ Name=asciipen
 Comment=a textmode art editor
 GenericName=Drawing
 Categories=Graphics;2DGraphics;RasterGraphics
+Icon=asciipen
 Exec=asciipen %U
 TryExec=asciipen
 Terminal=false

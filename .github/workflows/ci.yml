@@ -40,6 +40,7 @@ jobs:
         mkdir aDir/usr/bin/
         cp ./asciipen aDir/usr/bin/
         cp ./data/asciipen.desktop aDir/
+        cp ./data/asciipen.png aDir/
         echo -e "#!/bin/sh\n\
         HERE=\"\$(dirname \"\$(readlink -f \"\${0}\")\")\"\n\
         EXEC=\"\${HERE}/usr/bin/asciipen\"\n\
@@ -108,9 +109,28 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Lint Info.plist
+      run: plutil data/Info.plist
+
+    - name: Generate .icns
+      run: |
+        mkdir asciipen.iconset
+        sips -z 16 16     data/asciipen.png --out asciipen.iconset/icon_16x16.png
+        sips -z 32 32     data/asciipen.png --out asciipen.iconset/icon_16x16@2x.png
+        sips -z 32 32     data/asciipen.png --out asciipen.iconset/icon_32x32.png
+        sips -z 64 64     data/asciipen.png --out asciipen.iconset/icon_32x32@2x.png
+        sips -z 128 128   data/asciipen.png --out asciipen.iconset/icon_128x128.png
+        sips -z 256 256   data/asciipen.png --out asciipen.iconset/icon_128x128@2x.png
+        sips -z 256 256   data/asciipen.png --out asciipen.iconset/icon_256x256.png
+        sips -z 512 512   data/asciipen.png --out asciipen.iconset/icon_256x256@2x.png
+        sips -z 512 512   data/asciipen.png --out asciipen.iconset/icon_512x512.png
+        sips -z 1024 1024 data/asciipen.png --out asciipen.iconset/icon_512x512@2x.png
+        iconutil -c icns -o asciipen.icns asciipen.iconset
+        rm -R asciipen.iconset
+
     - name: Generate Build Files & Build
       run: |
-        make all GENERATOR="${{ matrix.generator }}" BUILD_TYPE=Release NUM_JOBS=4 CMAKE_GEN_FLAGS='-DCMAKE_OSX_ARCHITECTURES=${{ matrix.architecture }}'
+        make all GENERATOR="${{ matrix.generator }}" BUILD_TYPE=Release NUM_JOBS=4 CMAKE_GEN_FLAGS='-DCMAKE_OSX_ARCHITECTURES=${{ matrix.architecture }} -DBUILD_APPLE_BUNDLE=ON'
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
