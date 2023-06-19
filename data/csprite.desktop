@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=asciipen
+Comment=a textmode art editor
+GenericName=Drawing
+Categories=Graphics;2DGraphics;RasterGraphics
+Exec=asciipen %U
+TryExec=asciipen
+Terminal=false
+StartupNotify=false
+StartupWMClass=asciipen
