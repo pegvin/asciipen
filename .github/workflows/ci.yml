@@ -132,11 +132,14 @@ jobs:
       run: |
         make all GENERATOR="${{ matrix.generator }}" BUILD_TYPE=Release NUM_JOBS=4 CMAKE_GEN_FLAGS='-DCMAKE_OSX_ARCHITECTURES=${{ matrix.architecture }} -DBUILD_APPLE_BUNDLE=ON'
 
+    - name: Create Zip
+      run: zip -r asciipen.zip ./build/Release/asciipen.app/
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: osx-${{ matrix.architecture }}-${{ matrix.generator }}
-        path: ./build/Release/asciipen
+        path: ./asciipen.zip
         if-no-files-found: error
 
   update-ci-release:
@@ -206,8 +209,8 @@ jobs:
         mv ./linux_appimage-x86_64-gcc/*.AppImage ./linux-x64-gcc.AppImage
         mv ./linux-x86_64-gcc/asciipen ./linux-x64-gcc
 
-        mv ./osx-arm64-Xcode/asciipen ./osx-arm64-Xcode
-        mv ./osx-x86_64-Xcode/asciipen ./osx-x64-Xcode
+        mv ./osx-arm64-Xcode/asciipen.zip ./osx-arm64-Xcode.zip
+        mv ./osx-x86_64-Xcode/asciipen.zip ./osx-x64-Xcode.zip
 
     - uses: ncipollo/release-action@v1
       with:
