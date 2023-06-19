@@ -13,7 +13,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 option(ENABLE_APPLE_BUNDLE "Build Apple Bundle, Used For Releases & Is Ignored On Non-Apple Target" OFF)
 option(ENABLE_OPENGL_33 "Enable OpenGL 3.3" ON)
 
-project(textura C CXX)
+project(asciipen C CXX)
 file(GLOB_RECURSE SRC_FILES src/*.cpp src/*.c)
 
 # On Windows, Enable RC Language & Add It To Sources
@@ -25,29 +25,29 @@ endif()
 include(${CMAKE_CURRENT_SOURCE_DIR}/common_defs.cmake)
 
 if(APPLE AND BUILD_APPLE_BUNDLE)
-	add_executable(textura MACOSX_BUNDLE ${SRC_FILES})
+	add_executable(asciipen MACOSX_BUNDLE ${SRC_FILES})
 	set_source_files_properties(
-		${CMAKE_CURRENT_SOURCE_DIR}/textura.icns PROPERTIES
+		${CMAKE_CURRENT_SOURCE_DIR}/asciipen.icns PROPERTIES
 		MACOSX_PACKAGE_LOCATION "Resources"
 	)
 	set_target_properties(
-		textura PROPERTIES BUNDLE True
-		MACOSX_BUNDLE_BUNDLE_NAME "textura"                  # CFBundleName
-		MACOSX_BUNDLE_BUNDLE_VERSION "0.0.1"                 # CFBundleVersion
-		MACOSX_BUNDLE_LONG_VERSION_STRING "0.0.1"            # CFBundleLongVersionString
-		MACOSX_BUNDLE_SHORT_VERSION_STRING "0.0.1"           # CFBundleShortVersionString
-		MACOSX_BUNDLE_COPYRIGHT "adityaraj"                  # NSHumanReadableCopyright
-		MACOSX_BUNDLE_GUI_IDENTIFIER "pegvin.textura.github" # CFBundleIdentifier
-		MACOSX_BUNDLE_ICON_FILE "textura.icns"               # CFBundleIconFile
+		asciipen PROPERTIES BUNDLE True
+		MACOSX_BUNDLE_BUNDLE_NAME "asciipen"                  # CFBundleName
+		MACOSX_BUNDLE_BUNDLE_VERSION "0.0.1"                  # CFBundleVersion
+		MACOSX_BUNDLE_LONG_VERSION_STRING "0.0.1"             # CFBundleLongVersionString
+		MACOSX_BUNDLE_SHORT_VERSION_STRING "0.0.1"            # CFBundleShortVersionString
+		MACOSX_BUNDLE_COPYRIGHT "adityaraj"                   # NSHumanReadableCopyright
+		MACOSX_BUNDLE_GUI_IDENTIFIER "pegvin.asciipen.github" # CFBundleIdentifier
+		MACOSX_BUNDLE_ICON_FILE "asciipen.icns"               # CFBundleIconFile
 		MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/data/Info.plist
 	)
 else()
-	add_executable(textura ${SRC_FILES})
+	add_executable(asciipen ${SRC_FILES})
 endif()
 
 if(WIN32)
-	add_custom_command(TARGET textura POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:textura> $<TARGET_RUNTIME_DLLS:textura>
+	add_custom_command(TARGET asciipen POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:asciipen> $<TARGET_RUNTIME_DLLS:asciipen>
 		COMMAND_EXPAND_LISTS
 	)
 endif()
@@ -66,9 +66,9 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/glad/)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui/)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/stb/)
 
-target_link_libraries(textura PUBLIC glad_loader)
-target_link_libraries(textura PUBLIC glfw)
-target_link_libraries(textura PUBLIC imgui_static)
-target_link_libraries(textura PUBLIC stb_image)
+target_link_libraries(asciipen PUBLIC glad_loader)
+target_link_libraries(asciipen PUBLIC glfw)
+target_link_libraries(asciipen PUBLIC imgui_static)
+target_link_libraries(asciipen PUBLIC stb_image)
 target_link_libraries(imgui_static PUBLIC glfw)
-target_include_directories(textura PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/)
+target_include_directories(asciipen PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/)
