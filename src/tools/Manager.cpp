@@ -1,8 +1,10 @@
 #include "imgui/imgui.h"
 #include "pixel/pixel.hpp"
 #include "renderer/texture.hpp"
+#include "tileset/tilemap.hpp"
 #include "tileset/tileset.hpp"
 #include "tools/Manager.hpp"
+#include "types.hpp"
 
 static ToolType tType = ToolType::PENCIL;
 static ToolType LastToolType = tType;
@@ -49,13 +51,9 @@ const ImVec4& Manager::GetViewPort() {
 	return ViewPort;
 }
 
-static u32      DocRows   = 0;
-static u32      DocCols   = 0;
-static u32      DocWidthPixels = 0;
-static u32      DocHeightPixels = 0;
+static TileMap* tMap = nullptr;
 static Pixel*   DocRender = nullptr;
 static Texture* DocTex = nullptr;
-static TileSet* DocTSet = nullptr;
 
 ImTextureID Manager::GetDocTex() {
 	return reinterpret_cast<ImTextureID>(DocTex->id);
@@ -71,21 +69,15 @@ void Manager::CreateNew(
 
 	Manager::Release();
 
-	DocRows = _row;
-	DocCols = _col;
-	DocTSet = new TileSet();
-	DocTSet->LoadFrom(tileSetFilePath, _tRows, _tCols, _tWidth, _tHeight);
-	DocWidthPixels = DocRows * DocTSet->tileWidth;
-	DocHeightPixels = DocCols * DocTSet->tileHeight;
-	DocRender = new Pixel[DocWidthPixels * DocHeightPixels];
-	DocTex = new Texture(DocWidthPixels, DocHeightPixels);
+	tMap = new TileMap(_row, _col, tileSetFilePath, _tRows, _tCols, _tWidth, _tHeight);
+	DocRender = new Pixel[tMap->GetTotalPixels()];
+	DocTex = new Texture(tMap->GetWidthPixels(), tMap->GetHeightPixels());
 
-	for (u32 i = 0; i < DocWidthPixels * DocHeightPixels; i++) {
-		DocRender[i] = { 0, 0, 0, 255 };
-	}
+	RectI32 _dirtyArea = { 0, 0, _row, _col };
+	tMap->Render(_dirtyArea, DocRender, tMap->GetWidthPixels());
 	DocTex->Update(DocRender);
 
-	Manager::SetViewPortSize(DocWidthPixels, DocHeightPixels);
+	Manager::SetViewPortSize(tMap->GetWidthPixels(), tMap->GetHeightPixels());
 
 	ImGuiIO& io = ImGui::GetIO();
 	ViewPort.x = (io.DisplaySize.x / 2) - (ViewPort.x / 2);
@@ -96,8 +88,8 @@ void Manager::ProcessFrame() {
 	ImGuiIO& io = ImGui::GetIO();
 	static ImVec2 MousePosRel;
 	MousePosRel = {
-		(f32)i32(((io.MousePos.x - ViewPort.x) / DocTSet->tileWidth) / ViewPortScale),
-		(f32)i32(((io.MousePos.y - ViewPort.y) / DocTSet->tileHeight) / ViewPortScale)
+		(f32)i32(((io.MousePos.x - ViewPort.x) / tMap->tSet.tileWidth) / ViewPortScale),
+		(f32)i32(((io.MousePos.y - ViewPort.y) / tMap->tSet.tileHeight) / ViewPortScale)
 	};
 
 	if (ImGui::IsKeyPressed(ImGuiKey_Space, false)) {
@@ -116,12 +108,13 @@ void Manager::ProcessFrame() {
 		ViewPort.x += io.MouseDelta.x;
 		ViewPort.y += io.MouseDelta.y;
 	} else if (tType == ToolType::PENCIL && ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
-		if (MousePosRel.x >= 0 && MousePosRel.y >= 0 && MousePosRel.x < DocRows && MousePosRel.y < DocCols) {
-			DocTSet->CopyTile(
-				1, 0, DocRender,
-				MousePosRel.x * DocTSet->tileWidth, MousePosRel.y * DocTSet->tileHeight,
-				DocWidthPixels
-			);
+		if (MousePosRel.x >= 0 && MousePosRel.y >= 0 && MousePosRel.x < tMap->tMapRows && MousePosRel.y < tMap->tMapCols) {
+			tMap->tiles[(i32)((MousePosRel.y * tMap->tMapRows) + MousePosRel.x)].TileIndex = 2;
+
+			static RectI32 _dirtyArea = { 0, 0, 1, 1 };
+			_dirtyArea.x = (i32)MousePosRel.x;
+			_dirtyArea.y = (i32)MousePosRel.y;
+			tMap->Render(_dirtyArea, DocRender, tMap->GetWidthPixels());
 			DocTex->Update(DocRender);
 		}
 	}
@@ -142,5 +135,5 @@ void Manager::ProcessFrame() {
 void Manager::Release() {
 	if (DocRender) delete[] DocRender;
 	if (DocTex) delete DocTex;
-	if (DocTSet) delete DocTSet;
+	if (tMap) delete tMap;
 }

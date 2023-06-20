@@ -38,23 +38,29 @@ void TileSet::LoadFrom(const char* filePath, u16 rows, u16 cols, u16 _tWidth, u1
 }
 
 void TileSet::CopyTile(
-	u16 tX, u16 tY,
+	i16 tX, i16 tY,
 	Pixel* destBuffer,
 	u16 dBuffX, u16 dBuffY,
 	u16 dBuffWidth
 ) {
 	for (u32 y = 0; y < tileHeight; ++y) {
-		u32 scaledX = tX * tileWidth;
-		u32 scaledY = (tY * tileHeight) + y;
-		Pixel* srcBuffer = tiles + (scaledY * tileSetWidth * tileWidth) + scaledX;
-		memcpy(
-			destBuffer + ((dBuffY + y) * dBuffWidth) + dBuffX,
-			srcBuffer, sizeof(Pixel) * tileWidth
-		);
+		if ((tY * tileSetWidth) + tX < 0) {
+			for (u32 x = dBuffX; x < dBuffWidth; ++x) {
+				destBuffer[((dBuffY + y) * dBuffWidth) + x] = { 0, 0, 0, 255 };
+			}
+		} else {
+			u32 scaledX = tX * tileWidth;
+			u32 scaledY = (tY * tileHeight) + y;
+			Pixel* srcBuffer = tiles + (scaledY * tileSetWidth * tileWidth) + scaledX;
+			memcpy(
+				destBuffer + ((dBuffY + y) * dBuffWidth) + dBuffX,
+				srcBuffer, sizeof(Pixel) * tileWidth
+			);
+		}
 	}
 }
 
-Pixel* TileSet::TileAt(u16 tileIdx) {
+Pixel* TileSet::TileAt(u16 tileIdx) const {
 	return (tiles + (tileWidth * tileHeight * tileIdx));
 }
 
