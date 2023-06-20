@@ -6,7 +6,8 @@
 #include "pixel/pixel.hpp"
 
 struct TileSet {
-	Pixel* tiles = nullptr;
+	Vector<bool> tiles;
+	// Pixel* tiles = nullptr;
 	u16 tileWidth = 0;     // number of pixels in a tile horizontally
 	u16 tileHeight = 0;    // number of pixels in a tile vertically
 	u16 tileSetWidth = 0;  // number of tiles horizontally

@@ -19,18 +19,14 @@ void TileSet::LoadFrom(const char* filePath, u16 rows, u16 cols, u16 _tWidth, u1
 	tileWidth = _tWidth;
 	tileHeight = _tHeight;
 
-	if (tiles) delete[] tiles;
+	if (tiles.size() > 0) tiles.clear();
 
-	tiles = new Pixel[w * h];
+	tiles.reserve((rows * _tWidth) * (cols * _tHeight));
 	for (i32 y = 0; y < h; ++y) {
 		for (i32 x = 0; x < w; ++x) {
 			u8* _src = pixels + (y * w + x) * 4;
-			tiles[(y * w) + x] = {
-				*(_src + 0),
-				*(_src + 1),
-				*(_src + 2),
-				*(_src + 3)
-			};
+			u8  emptyPixel[4] = { 0, 0, 0, 255 };
+			tiles[(y * w) + x] = memcmp(_src, emptyPixel, 4 * sizeof(u8)) != 0;
 		}
 	}
 	stbi_image_free(pixels);
@@ -44,29 +40,20 @@ void TileSet::CopyTile(
 	u16 dBuffWidth
 ) {
 	for (u32 y = 0; y < tileHeight; ++y) {
-		if ((tY * tileSetWidth) + tX < 0) {
-			for (u32 x = dBuffX; x < dBuffWidth; ++x) {
-				destBuffer[((dBuffY + y) * dBuffWidth) + x] = { 0, 0, 0, 255 };
-			}
-		} else {
-			u32 scaledX = tX * tileWidth;
+		for (u32 x = 0; x < tileWidth; ++x) {
+			u32 scaledX = (tX * tileWidth) + x;
 			u32 scaledY = (tY * tileHeight) + y;
-			Pixel* srcBuffer = tiles + (scaledY * tileSetWidth * tileWidth) + scaledX;
-			memcpy(
-				destBuffer + ((dBuffY + y) * dBuffWidth) + dBuffX,
-				srcBuffer, sizeof(Pixel) * tileWidth
-			);
+
+			bool isTrue = (tY * tileSetWidth) + tX >= 0;
+			isTrue = isTrue && tiles[(scaledY * (tileSetWidth * tileWidth)) + scaledX];
+
+			destBuffer[((dBuffY + y) * dBuffWidth) + dBuffX + x] = isTrue ? Pixel{ 255, 255, 255, 255 } : Pixel{ 0, 0, 0, 255 };
 		}
 	}
 }
 
-Pixel* TileSet::TileAt(u16 tileIdx) const {
-	return (tiles + (tileWidth * tileHeight * tileIdx));
-}
-
 TileSet::~TileSet() {
-	if (tiles) {
-		delete[] tiles;
-		tiles = nullptr;
+	if (tiles.size() > 0) {
+		tiles.clear();
 	}
 }
