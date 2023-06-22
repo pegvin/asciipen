@@ -25,6 +25,7 @@ int main(int argc, char **argv) {
 		App::NewFrame();
 		Manager::ProcessFrame();
 
+		ImVec2 MainMenuSize;
 		if (ImGui::BeginMainMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("New", "Ctrl+N")) {
@@ -32,6 +33,7 @@ int main(int argc, char **argv) {
 				}
 				ImGui::EndMenu();
 			}
+			MainMenuSize = ImGui::GetWindowSize();
 			ImGui::EndMainMenuBar();
 		}
 
@@ -47,7 +49,9 @@ int main(int argc, char **argv) {
 			{ ViewPort.z + ViewPort.x, ViewPort.w + ViewPort.y }
 		);
 
-		ImGui::SetNextWindowPos({ io.DisplaySize.x - 400.0f, io.DisplaySize.y / 5 });
+		ImGui::SetNextWindowPos({
+			MainMenuSize.x, MainMenuSize.y
+		});
 		ImGui::SetNextWindowSize({ 405.0f, io.DisplaySize.y / 1.5f });
 		if (ImGui::Begin("TileSet Palette", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus)) {
 			static float TileSetPaletteScale = 1.5;
