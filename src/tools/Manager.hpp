@@ -4,6 +4,7 @@
 
 #include "types.hpp"
 #include "imgui/imgui.h"
+#include "tileset/tilemap.hpp"
 
 enum ToolType {
 	NONE = 0,
@@ -20,6 +21,12 @@ namespace Manager {
 		const char* tileSetFilePath
 	);
 	ImTextureID GetDocTex();
+	ImTextureID GetTileSetTex();
+
+	const TileMap& GetTileMap();
+
+	i16 GetSelectedTile();
+	void SetSelectedTile(i16 idx);
 
 	void SetToolType(ToolType _T);
 	ToolType GetToolType();

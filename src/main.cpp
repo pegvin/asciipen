@@ -16,6 +16,11 @@ int main(int argc, char **argv) {
 	);
 	Manager::SetViewPortScale(1);
 
+	ImGuiIO& io = ImGui::GetIO();
+
+	const ImVec4& ViewPort = Manager::GetViewPort();
+	const TileMap& tMap = Manager::GetTileMap();
+
 	while (!App::ShouldClose()) {
 		App::NewFrame();
 		Manager::ProcessFrame();
@@ -28,6 +33,62 @@ int main(int argc, char **argv) {
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();
+		}
+
+		// ViewPort Rendering
+		ImGui::GetBackgroundDrawList()->AddRect(
+			{ ViewPort.x - 1, ViewPort.y - 1 },
+			{ ViewPort.z + ViewPort.x + 1, ViewPort.w + ViewPort.y + 1 },
+			ImGui::GetColorU32(ImGuiCol_Border), 0.0f, 0, 1.0f
+		);
+		ImGui::GetBackgroundDrawList()->AddImage(
+			Manager::GetDocTex(),
+			{ ViewPort.x, ViewPort.y },
+			{ ViewPort.z + ViewPort.x, ViewPort.w + ViewPort.y }
+		);
+
+		ImGui::SetNextWindowPos({ io.DisplaySize.x - 400.0f, io.DisplaySize.y / 5 });
+		ImGui::SetNextWindowSize({ 405.0f, io.DisplaySize.y / 1.5f });
+		if (ImGui::Begin("TileSet Palette", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus)) {
+			static float TileSetPaletteScale = 1.5;
+			ImGui::SliderFloat("Scale", &TileSetPaletteScale, 0.25f, 2.5f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+
+			ImGui::Image(
+				Manager::GetTileSetTex(),
+				{ 256.0f * TileSetPaletteScale, 256.0f * TileSetPaletteScale }
+			);
+			auto _ImageRectMin = ImGui::GetItemRectMin();
+			auto _ImageIsHovered = ImGui::IsItemHovered() && ImGui::IsWindowHovered();
+			ImVec2 tilePos = {
+				(f32)(Manager::GetSelectedTile() % tMap.tSet.tileSetWidth),
+				(f32)(Manager::GetSelectedTile() / tMap.tSet.tileSetHeight)
+			};
+			ImVec2 iRectMin = {
+				_ImageRectMin.x + (tilePos.x * tMap.tSet.tileWidth * TileSetPaletteScale),
+				_ImageRectMin.y + (tilePos.y * tMap.tSet.tileHeight * TileSetPaletteScale)
+			};
+			ImVec2 iRectMax = {
+				iRectMin.x + (tMap.tSet.tileWidth * TileSetPaletteScale),
+				iRectMin.y + (tMap.tSet.tileHeight * TileSetPaletteScale)
+			};
+			ImGui::GetWindowDrawList()->AddRect(iRectMin, iRectMax, 0xFF0000AE, 0.0f, 0, 1.2f);
+
+			ImGui::Text("Selected: %d, %d (%d)", (i32)tilePos.x, (i32)tilePos.y, Manager::GetSelectedTile());
+
+			if (_ImageIsHovered) {
+				ImVec2 _HoveredTilePos = {
+					(io.MousePos.x - _ImageRectMin.x) / (tMap.tSet.tileWidth * TileSetPaletteScale),
+					(io.MousePos.y - _ImageRectMin.y) / (tMap.tSet.tileHeight * TileSetPaletteScale)
+				};
+				i32 _HoveredTilePos1D = ((i32)_HoveredTilePos.y * tMap.tSet.tileSetWidth) + (i32)_HoveredTilePos.x;
+
+				ImGui::Text("Hovering: %d, %d (%d)", (i32)_HoveredTilePos.x, (i32)_HoveredTilePos.y, _HoveredTilePos1D);
+				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+					Manager::SetSelectedTile(_HoveredTilePos1D);
+				}
+			}
+
+			ImGui::End();
 		}
 
 		App::EndFrame();

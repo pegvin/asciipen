@@ -55,9 +55,26 @@ static TileMap* tMap = nullptr;
 static Pixel*   DocRender = nullptr;
 static Texture* DocTex = nullptr;
 static Texture* TileSetTex = nullptr;
+static i16      SelectedTile = 0;
+
+i16 Manager::GetSelectedTile() {
+	return SelectedTile;
+}
+
+void Manager::SetSelectedTile(i16 idx) {
+	SelectedTile = idx;
+}
 
 ImTextureID Manager::GetDocTex() {
 	return reinterpret_cast<ImTextureID>(DocTex->id);
+}
+
+ImTextureID Manager::GetTileSetTex() {
+	return reinterpret_cast<ImTextureID>(TileSetTex->id);
+}
+
+const TileMap& Manager::GetTileMap() {
+	return *tMap;
 }
 
 void Manager::CreateNew(
@@ -93,7 +110,6 @@ void Manager::CreateNew(
 void Manager::ProcessFrame() {
 	ImGuiIO& io = ImGui::GetIO();
 	static ImVec2 MousePosRel;
-	static i16 SelectedTile = 0;
 	MousePosRel = {
 		(f32)i32(((io.MousePos.x - ViewPort.x) / tMap->tSet.tileWidth) / ViewPortScale),
 		(f32)i32(((io.MousePos.y - ViewPort.y) / tMap->tSet.tileHeight) / ViewPortScale)
@@ -126,62 +142,6 @@ void Manager::ProcessFrame() {
 			tMap->Render(_dirtyArea, DocRender, tMap->GetWidthPixels());
 			DocTex->Update(DocRender);
 		}
-	}
-
-	// ViewPort Rendering
-	ImGui::GetBackgroundDrawList()->AddRect(
-		{ ViewPort.x - 1, ViewPort.y - 1 },
-		{ ViewPort.z + ViewPort.x + 1, ViewPort.w + ViewPort.y + 1 },
-		ImGui::GetColorU32(ImGuiCol_Border), 0.0f, 0, 1.0f
-	);
-	ImGui::GetBackgroundDrawList()->AddImage(
-		Manager::GetDocTex(),
-		{ ViewPort.x, ViewPort.y },
-		{ ViewPort.z + ViewPort.x, ViewPort.w + ViewPort.y }
-	);
-
-	ImGui::SetNextWindowPos({ io.DisplaySize.x - 400.0f, io.DisplaySize.y / 5 });
-	ImGui::SetNextWindowSize({ 405.0f, io.DisplaySize.y / 1.5f });
-	if (ImGui::Begin("TileSet Palette", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus)) {
-		static float TileSetPaletteScale = 1.5;
-		ImGui::SliderFloat("Scale", &TileSetPaletteScale, 0.25f, 2.5f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-
-		ImGui::Image(
-			reinterpret_cast<ImTextureID>(TileSetTex->id),
-			{ 256.0f * TileSetPaletteScale, 256.0f * TileSetPaletteScale }
-		);
-		auto _ImageRectMin = ImGui::GetItemRectMin();
-		auto _ImageIsHovered = ImGui::IsItemHovered() && ImGui::IsWindowHovered();
-		ImVec2 tilePos = {
-			(f32)(SelectedTile % tMap->tSet.tileSetWidth),
-			(f32)(SelectedTile / tMap->tSet.tileSetHeight)
-		};
-		ImVec2 iRectMin = {
-			_ImageRectMin.x + (tilePos.x * tMap->tSet.tileWidth * TileSetPaletteScale),
-			_ImageRectMin.y + (tilePos.y * tMap->tSet.tileHeight * TileSetPaletteScale)
-		};
-		ImVec2 iRectMax = {
-			iRectMin.x + (tMap->tSet.tileWidth * TileSetPaletteScale),
-			iRectMin.y + (tMap->tSet.tileHeight * TileSetPaletteScale)
-		};
-		ImGui::GetWindowDrawList()->AddRect(iRectMin, iRectMax, 0xFF0000AE, 0.0f, 0, 1.2f);
-
-		ImGui::Text("Selected: %d, %d (%d)", (i32)tilePos.x, (i32)tilePos.y, SelectedTile);
-
-		if (_ImageIsHovered) {
-			ImVec2 _HoveredTilePos = {
-				(io.MousePos.x - _ImageRectMin.x) / (tMap->tSet.tileWidth * TileSetPaletteScale),
-				(io.MousePos.y - _ImageRectMin.y) / (tMap->tSet.tileHeight * TileSetPaletteScale)
-			};
-			i32 _HoveredTilePos1D = ((i32)_HoveredTilePos.y * tMap->tSet.tileSetWidth) + (i32)_HoveredTilePos.x;
-
-			ImGui::Text("Hovering: %d, %d (%d)", (i32)_HoveredTilePos.x, (i32)_HoveredTilePos.y, _HoveredTilePos1D);
-			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-				SelectedTile = _HoveredTilePos1D;
-			}
-		}
-
-		ImGui::End();
 	}
 }
 
