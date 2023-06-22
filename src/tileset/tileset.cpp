@@ -20,13 +20,21 @@ void TileSet::LoadFrom(const char* filePath, u16 rows, u16 cols, u16 _tWidth, u1
 	tileHeight = _tHeight;
 
 	if (tiles.size() > 0) tiles.clear();
+	if (tilesPixels != nullptr) delete[] tilesPixels;
 
 	tiles.reserve((rows * _tWidth) * (cols * _tHeight));
+	tilesPixels = new Pixel[(rows * _tWidth) * (cols * _tHeight)];
 	for (i32 y = 0; y < h; ++y) {
 		for (i32 x = 0; x < w; ++x) {
 			u8* _src = pixels + (y * w + x) * 4;
 			u8  emptyPixel[4] = { 0, 0, 0, 255 };
 			tiles[(y * w) + x] = memcmp(_src, emptyPixel, 4 * sizeof(u8)) != 0;
+			tilesPixels[(y * w) + x] = {
+				*(_src + 0),
+				*(_src + 1),
+				*(_src + 2),
+				*(_src + 3)
+			};
 		}
 	}
 	stbi_image_free(pixels);
@@ -55,5 +63,9 @@ void TileSet::CopyTile(
 TileSet::~TileSet() {
 	if (tiles.size() > 0) {
 		tiles.clear();
+	}
+	if (tilesPixels != nullptr) {
+		delete[] tilesPixels;
+		tilesPixels = nullptr;
 	}
 }

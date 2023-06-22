@@ -7,7 +7,7 @@
 
 struct TileSet {
 	Vector<bool> tiles;
-	// Pixel* tiles = nullptr;
+	Pixel* tilesPixels = nullptr;
 	u16 tileWidth = 0;     // number of pixels in a tile horizontally
 	u16 tileHeight = 0;    // number of pixels in a tile vertically
 	u16 tileSetWidth = 0;  // number of tiles horizontally
