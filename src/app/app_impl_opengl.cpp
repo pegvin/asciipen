@@ -27,6 +27,7 @@ i32 App::Init(u16 w, u16 h, const char* title) {
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 	glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_TRUE);
 	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
 	window = glfwCreateWindow(w, h, title, NULL, NULL);
 
