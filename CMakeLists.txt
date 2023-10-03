@@ -49,14 +49,28 @@ if(WIN32)
 	)
 endif()
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/common_defs.cmake)
-
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/imbase/)
 target_link_libraries(asciipen PUBLIC imbase)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/stb/)
-
 target_link_libraries(asciipen PUBLIC stb_image)
-target_link_libraries(asciipen PUBLIC imbase)
+
 target_include_directories(asciipen PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/)
+
+# Use Address Sanitizer in Debug Mode
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+	if(NOT (WIN32 OR CYGWIN))
+		target_compile_options(asciipen PRIVATE -fsanitize=address)
+		target_link_options(asciipen PRIVATE -fsanitize=address)
+	endif()
+endif()
+
+target_compile_options(asciipen PRIVATE
+	$<$<CXX_COMPILER_ID:MSVC>:/W4>
+	$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
+
+if(CMAKE_CXX_BYTE_ORDER STREQUAL "BIG_ENDIAN")
+	target_compile_definitions(asciipen PRIVATE -DTARGET_IS_BIGENDIAN=1)
+endif()
 
