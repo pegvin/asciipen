@@ -17,4 +17,4 @@ clean:
 	@$(RM) -r $(BUILD_DIR)
 
 run: all
-	@./build/textura
+	@./build/asciipen

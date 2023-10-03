@@ -50,10 +50,12 @@ int main(int argc, char **argv) {
 		);
 
 		ImGui::SetNextWindowPos({
-			MainMenuSize.x, MainMenuSize.y
+			io.DisplaySize.x - 405.0f, MainMenuSize.y
 		});
-		ImGui::SetNextWindowSize({ 405.0f, io.DisplaySize.y / 1.5f });
-		if (ImGui::Begin("TileSet Palette", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus)) {
+		ImGui::SetNextWindowSize({
+			405.0f, io.DisplaySize.y - MainMenuSize.y
+		});
+		if (ImGui::Begin("TileSet Palette", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus)) {
 			static float TileSetPaletteScale = 1.5;
 			ImGui::SliderFloat("Scale", &TileSetPaletteScale, 0.25f, 2.5f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 
