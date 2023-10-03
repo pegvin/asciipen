@@ -10,12 +10,7 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-option(ENABLE_APPLE_BUNDLE "Build Apple Bundle, Used For Releases & Is Ignored On Non-Apple Target" OFF)
-option(ENABLE_OPENGL_33 "Enable OpenGL 3.3" ON)
-
-if (NOT ENABLE_OPENGL_33)
-	message(FATAL_ERROR "Atleast One Renderer API is Required!")
-endif()
+option(BUILD_APPLE_BUNDLE "Build Apple Bundle, Used For Releases & Is Ignored On Non-Apple Target" OFF)
 
 project(asciipen C CXX)
 file(GLOB_RECURSE SRC_FILES src/*.cpp src/*.c)
