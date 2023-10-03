@@ -56,22 +56,12 @@ endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/common_defs.cmake)
 
-# GLFW Configuration
-set(BUILD_SHARED_LIBS   OFF CACHE INTERNAL "")
-set(GLFW_VULKAN_STATIC  OFF CACHE INTERNAL "")
-set(GLFW_BUILD_EXAMPLES OFF CACHE INTERNAL "")
-set(GLFW_BUILD_TESTS    OFF CACHE INTERNAL "")
-set(GLFW_BUILD_DOCS     OFF CACHE INTERNAL "")
-set(GLFW_INSTALL        OFF CACHE INTERNAL "")
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/glfw/)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/imbase/)
+target_link_libraries(asciipen PUBLIC imbase)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/glad/)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui/)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/stb/)
 
-target_link_libraries(asciipen PUBLIC glad_loader)
-target_link_libraries(asciipen PUBLIC glfw)
-target_link_libraries(asciipen PUBLIC imgui_static)
 target_link_libraries(asciipen PUBLIC stb_image)
-target_link_libraries(imgui_static PUBLIC glfw)
+target_link_libraries(asciipen PUBLIC imbase)
 target_include_directories(asciipen PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/)
+

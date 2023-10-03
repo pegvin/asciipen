@@ -1,14 +1,15 @@
 #include <iostream>
 
-#include "app/app.hpp"
 #include "imgui/imgui.h"
+#include "imbase/window.hpp"
 #include "tools/Manager.hpp"
 #include "types.hpp"
 
-int main(int argc, char **argv) {
-	if (App::Init(700, 500) != 0) {
+int main(void) {
+	if (ImBase::Window::Init(700, 500, "asciipen") != 0) {
 		return 1;
 	}
+	ImBase::Window::SetMaxFPS(60);
 
 	Manager::CreateNew(
 		40, 25, 16, 16, 16, 16,
@@ -21,8 +22,8 @@ int main(int argc, char **argv) {
 	const ImVec4& ViewPort = Manager::GetViewPort();
 	const TileMap& tMap = Manager::GetTileMap();
 
-	while (!App::ShouldClose()) {
-		App::NewFrame();
+	while (!ImBase::Window::ShouldClose()) {
+		ImBase::Window::NewFrame();
 		Manager::ProcessFrame();
 
 		ImVec2 MainMenuSize;
@@ -97,10 +98,11 @@ int main(int argc, char **argv) {
 			ImGui::End();
 		}
 
-		App::EndFrame();
+		ImBase::Window::EndFrame();
 	}
 
 	Manager::Release();
-	App::Release();
+	ImBase::Window::Destroy();
 	return 0;
 }
+

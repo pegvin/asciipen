@@ -1,6 +1,6 @@
 #include "imgui/imgui.h"
 #include "pixel/pixel.hpp"
-#include "renderer/texture.hpp"
+#include "imbase/texture.hpp"
 #include "tileset/tilemap.hpp"
 #include "tileset/tileset.hpp"
 #include "tools/Manager.hpp"
@@ -51,11 +51,11 @@ const ImVec4& Manager::GetViewPort() {
 	return ViewPort;
 }
 
-static TileMap* tMap = nullptr;
-static Pixel*   DocRender = nullptr;
-static Texture* DocTex = nullptr;
-static Texture* TileSetTex = nullptr;
-static i16      SelectedTile = 0;
+static TileMap*         tMap = nullptr;
+static Pixel*           DocRender = nullptr;
+static ImBase::Texture* DocTex = nullptr;
+static ImBase::Texture* TileSetTex = nullptr;
+static i16              SelectedTile = 0;
 
 i16 Manager::GetSelectedTile() {
 	return SelectedTile;
@@ -89,16 +89,17 @@ void Manager::CreateNew(
 
 	tMap = new TileMap(_row, _col, tileSetFilePath, _tRows, _tCols, _tWidth, _tHeight);
 	DocRender = new Pixel[tMap->GetTotalPixels()];
-	DocTex = new Texture(tMap->GetWidthPixels(), tMap->GetHeightPixels());
-	TileSetTex = new Texture(
+	DocTex = new ImBase::Texture(tMap->GetWidthPixels(), tMap->GetHeightPixels(), nullptr);
+	TileSetTex = new ImBase::Texture(
 		tMap->tSet.tileWidth * tMap->tSet.tileSetWidth,
-		tMap->tSet.tileHeight * tMap->tSet.tileSetHeight
+		tMap->tSet.tileHeight * tMap->tSet.tileSetHeight,
+		nullptr
 	);
 
 	RectI32 _dirtyArea = { 0, 0, _row, _col };
 	tMap->Render(_dirtyArea, DocRender, tMap->GetWidthPixels());
-	TileSetTex->Update(tMap->tSet.tilesPixels);
-	DocTex->Update(DocRender);
+	TileSetTex->Update((u8*)tMap->tSet.tilesPixels);
+	DocTex->Update((u8*)DocRender);
 
 	Manager::SetViewPortSize(tMap->GetWidthPixels(), tMap->GetHeightPixels());
 
@@ -140,7 +141,7 @@ void Manager::ProcessFrame() {
 			_dirtyArea.x = (i32)MousePosRel.x;
 			_dirtyArea.y = (i32)MousePosRel.y;
 			tMap->Render(_dirtyArea, DocRender, tMap->GetWidthPixels());
-			DocTex->Update(DocRender);
+			DocTex->Update((u8*)DocRender);
 		}
 	}
 }
