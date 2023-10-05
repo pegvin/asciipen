@@ -2,6 +2,7 @@
 
 #include "imgui/imgui.h"
 #include "imbase/window.hpp"
+#include "imbase/texture.hpp"
 #include "tools/Manager.hpp"
 #include "types.hpp"
 
@@ -21,6 +22,8 @@ int main(void) {
 
 	const ImVec4& ViewPort = Manager::GetViewPort();
 	const Document& Doc = Manager::GetDocument();
+	const u8 BgColor[] = { 0x48, 0x3A, 0xAA, 0xFF };
+	ImBase::Texture BgTex(1, 1, (u8*)BgColor);
 
 	while (!ImBase::Window::ShouldClose()) {
 		ImBase::Window::NewFrame();
@@ -43,6 +46,11 @@ int main(void) {
 			{ ViewPort.x - 1, ViewPort.y - 1 },
 			{ ViewPort.z + ViewPort.x + 1, ViewPort.w + ViewPort.y + 1 },
 			ImGui::GetColorU32(ImGuiCol_Border), 0.0f, 0, 1.0f
+		);
+		ImGui::GetBackgroundDrawList()->AddImage(
+			reinterpret_cast<ImTextureID>(BgTex.id),
+			{ ViewPort.x, ViewPort.y },
+			{ ViewPort.z + ViewPort.x, ViewPort.w + ViewPort.y }
 		);
 		ImGui::GetBackgroundDrawList()->AddImage(
 			Manager::GetDocTex(),
