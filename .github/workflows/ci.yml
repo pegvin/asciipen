@@ -87,16 +87,19 @@ jobs:
         export CFLAGS=${{ matrix.flags }}
         export LDFLAGS=${{ matrix.flags }}
         make all GENERATOR=Ninja BUILD_TYPE=Release NUM_JOBS=4
+        mv build/asciipen .
 
     - name: Generate Build Files & Build (Windows)
       if: ${{ matrix.os == 'windows-2022' }}
       run: |
         make all GENERATOR="${{ matrix.gen_cmake_name }}" BUILD_TYPE=Release NUM_JOBS=4 CMAKE_GEN_FLAGS='-A "${{ matrix.arch }}" -T "ClangCL"'
+        mv build/Release/asciipen.exe .
 
     - name: Generate Build Files, Build & Zip (MacOS)
       if: ${{ matrix.os == 'macos-12' }}
       run: |
         make all GENERATOR="${{ matrix.gen }}" BUILD_TYPE=Release NUM_JOBS=4 CMAKE_GEN_FLAGS='-DBUILD_APPLE_BUNDLE=ON -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}'
+        mv build/Release/asciipen .
 
     - name: Upload Artifacts (Linux)
       if: ${{ matrix.os == 'ubuntu-22.04' }}
@@ -105,8 +108,8 @@ jobs:
         name: linux-${{ matrix.arch }}
         if-no-files-found: error
         path: |
-          ./build/asciipen
-          ./assets
+          ./asciipen
+          ./data/
 
     - name: Upload artifacts (Windows)
       uses: actions/upload-artifact@v3
@@ -115,8 +118,8 @@ jobs:
         name: win-${{ matrix.arch }}
         if-no-files-found: error
         path: |
-          ./build/Release/asciipen.exe
-          ./assets
+          ./asciipen.exe
+          ./data/
 
     - name: Upload Artifacts (MacOS)
       uses: actions/upload-artifact@v3
