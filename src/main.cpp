@@ -20,7 +20,7 @@ int main(void) {
 	ImGuiIO& io = ImGui::GetIO();
 
 	const ImVec4& ViewPort = Manager::GetViewPort();
-	const TileMap& tMap = Manager::GetTileMap();
+	const Document& Doc = Manager::GetDocument();
 
 	while (!ImBase::Window::ShouldClose()) {
 		ImBase::Window::NewFrame();
@@ -67,16 +67,16 @@ int main(void) {
 			auto _ImageRectMin = ImGui::GetItemRectMin();
 			auto _ImageIsHovered = ImGui::IsItemHovered() && ImGui::IsWindowHovered();
 			ImVec2 tilePos = {
-				(f32)(Manager::GetSelectedTile() % tMap.tSet.tileSetWidth),
-				(f32)(Manager::GetSelectedTile() / tMap.tSet.tileSetHeight)
+				(f32)(Manager::GetSelectedTile() % Doc.tileSet.TileSetWidth),
+				(f32)(Manager::GetSelectedTile() / Doc.tileSet.TileSetHeight)
 			};
 			ImVec2 iRectMin = {
-				_ImageRectMin.x + (tilePos.x * tMap.tSet.tileWidth * TileSetPaletteScale),
-				_ImageRectMin.y + (tilePos.y * tMap.tSet.tileHeight * TileSetPaletteScale)
+				_ImageRectMin.x + (tilePos.x * Doc.tileSet.TileWidth * TileSetPaletteScale),
+				_ImageRectMin.y + (tilePos.y * Doc.tileSet.TileHeight * TileSetPaletteScale)
 			};
 			ImVec2 iRectMax = {
-				iRectMin.x + (tMap.tSet.tileWidth * TileSetPaletteScale),
-				iRectMin.y + (tMap.tSet.tileHeight * TileSetPaletteScale)
+				iRectMin.x + (Doc.tileSet.TileWidth * TileSetPaletteScale),
+				iRectMin.y + (Doc.tileSet.TileHeight * TileSetPaletteScale)
 			};
 			ImGui::GetWindowDrawList()->AddRect(iRectMin, iRectMax, 0xFF0000AE, 0.0f, 0, 1.2f);
 
@@ -84,10 +84,10 @@ int main(void) {
 
 			if (_ImageIsHovered) {
 				ImVec2 _HoveredTilePos = {
-					(io.MousePos.x - _ImageRectMin.x) / (tMap.tSet.tileWidth * TileSetPaletteScale),
-					(io.MousePos.y - _ImageRectMin.y) / (tMap.tSet.tileHeight * TileSetPaletteScale)
+					(io.MousePos.x - _ImageRectMin.x) / (Doc.tileSet.TileWidth * TileSetPaletteScale),
+					(io.MousePos.y - _ImageRectMin.y) / (Doc.tileSet.TileHeight * TileSetPaletteScale)
 				};
-				i32 _HoveredTilePos1D = ((i32)_HoveredTilePos.y * tMap.tSet.tileSetWidth) + (i32)_HoveredTilePos.x;
+				i32 _HoveredTilePos1D = ((i32)_HoveredTilePos.y * Doc.tileSet.TileSetWidth) + (i32)_HoveredTilePos.x;
 
 				ImGui::Text("Hovering: %d, %d (%d)", (i32)_HoveredTilePos.x, (i32)_HoveredTilePos.y, _HoveredTilePos1D);
 				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {

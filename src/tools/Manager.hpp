@@ -4,7 +4,7 @@
 
 #include "types.hpp"
 #include "imgui/imgui.h"
-#include "tileset/tilemap.hpp"
+#include "doc/doc.hpp"
 
 enum ToolType {
 	NONE = 0,
@@ -15,11 +15,12 @@ enum ToolType {
 
 namespace Manager {
 	void CreateNew(
-		u16 _dRow, u16 _dCol,
-		u16 _tRows, u16 _tCols,
-		u16 _tWidth, u16 _tHeight,
+		u16 tileMapWidth, u16 tileMapHeight,
+		u16 tileSetWidth, u16 tileSetHeight,
+		u16 tileWidth, u16 tileHeight,
 		const char* tileSetFilePath
 	);
+	const Document& GetDocument();
 	ImTextureID GetDocTex();
 	ImTextureID GetTileSetTex();
 
