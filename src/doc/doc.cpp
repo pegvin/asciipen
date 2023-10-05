@@ -20,6 +20,12 @@ void Document::Render(const RectI32& dirtyArea, Pixel *pixBuff, u32 pixBuffWidth
 					t.Foreground,
 					t.Background
 				);
+			} else { // clear the tile
+				for (u32 y = 0; y < tileSet.TileHeight; ++y) {
+					for (u32 x = 0; x < tileSet.TileWidth; ++x) {
+						pixBuff[((scaledY + y) * pixBuffWidth) + (scaledX + x)] = 0x00U;
+					}
+				}
 			}
 		}
 	}
