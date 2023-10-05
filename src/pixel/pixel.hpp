@@ -37,14 +37,6 @@ struct Pixel {
 		return *this;
 	}
 
-	inline Pixel& operator = (const Pixel& rhs) {
-		r = rhs.r;
-		g = rhs.g;
-		b = rhs.b;
-		a = rhs.a;
-		return *this;
-	}
-
 	inline bool operator == (const Pixel& rhs) const {
 		return (r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a);
 	}
