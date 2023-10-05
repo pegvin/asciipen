@@ -7,11 +7,13 @@
 #include "types.hpp"
 #include "doc/tilemap.hpp"
 #include "doc/tileset.hpp"
+#include "tools/ToolManager.hpp"
 
 struct Document {
 	String filePath;
 	TileMap tileMap;
 	TileSet tileSet;
+	Tool::Manager toolManager;
 
 	void Render(const RectI32& dirty, Pixel* pixBuff, u32 pixBuffWidth, u32 pixBuffHeight);
 
@@ -20,3 +22,4 @@ struct Document {
 };
 
 #endif // ASCIIPEN_DOC_DOC_HPP_INCLUDED_
+

@@ -5,66 +5,12 @@
 #include "tools/Manager.hpp"
 #include "types.hpp"
 
-static ToolType tType = ToolType::PENCIL;
-static ToolType LastToolType = tType;
-static f32    ViewPortScale = 1;
-static ImVec2 ViewPortSize = { 0, 0 };
-static ImVec4 ViewPort = { 0, 0, 0, 0 };
-
-void Manager::SetToolType(ToolType _t) {
-	tType = _t;
-}
-
-ToolType Manager::GetToolType() {
-	return tType;
-}
-
-void Manager::SetViewPortSize(u32 w, u32 h) {
-	ViewPortSize = { (f32)w, (f32)h };
-}
-
-void Manager::SetViewPortScale(f32 _scale) {
-	ViewPortScale = _scale > 1.0f ? _scale : 1.0f;
-
-	// Ensures That The ViewPort is Centered From The Center
-	ImVec2 CurrRectCenter = {
-		(ViewPort.z / 2) + ViewPort.x, (ViewPort.w / 2) + ViewPort.y
-	};
-	ImVec2 NewRectCenter = {
-		(ViewPortSize.x * ViewPortScale / 2) + ViewPort.x,
-		(ViewPortSize.y * ViewPortScale / 2) + ViewPort.y
-	};
-	ViewPort.x -= NewRectCenter.x - CurrRectCenter.x;
-	ViewPort.y -= NewRectCenter.y - CurrRectCenter.y;
-
-	// Update The Size Of The ViewPort
-	ViewPort.z = ViewPortSize.x * ViewPortScale;
-	ViewPort.w = ViewPortSize.y * ViewPortScale;
-}
-
-f32 Manager::GetViewPortScale() {
-	return ViewPortScale;
-}
-
-const ImVec4& Manager::GetViewPort() {
-	return ViewPort;
-}
-
 static Document Doc;
 static Pixel*           DocRender = nullptr;
 static ImBase::Texture* DocTex = nullptr;
 static ImBase::Texture* TileSetTex = nullptr;
-static i32              SelectedTile = 0;
 
-i16 Manager::GetSelectedTile() {
-	return SelectedTile;
-}
-
-void Manager::SetSelectedTile(i16 idx) {
-	SelectedTile = idx;
-}
-
-const Document& Manager::GetDocument() {
+Document& Manager::GetDocument() {
 	return Doc;
 }
 
@@ -109,71 +55,94 @@ void Manager::CreateNew(
 	TileSetTex->Update((u8*)Doc.tileSet.Pixels);
 	DocTex->Update((u8*)DocRender);
 
-	Manager::SetViewPortSize(
-		Doc.TileMapWidthPixels(),
-		Doc.TileMapHeightPixels()
-	);
+	Doc.toolManager.ViewPortSize.x = Doc.TileMapWidthPixels();
+	Doc.toolManager.ViewPortSize.y = Doc.TileMapHeightPixels();
 
 	ImGuiIO& io = ImGui::GetIO();
-	ViewPort.x = (io.DisplaySize.x / 2) - (ViewPort.x / 2);
-	ViewPort.y = (io.DisplaySize.y / 2) - (ViewPort.y / 2);
+	Doc.toolManager.ViewPort.x = (io.DisplaySize.x / 2) - (Doc.toolManager.ViewPort.x / 2);
+	Doc.toolManager.ViewPort.y = (io.DisplaySize.y / 2) - (Doc.toolManager.ViewPort.y / 2);
 }
 
 void Manager::ProcessFrame() {
 	ImGuiIO& io = ImGui::GetIO();
-	static ImVec2 MousePosRel;
-	MousePosRel = {
-		(f32)i32(((io.MousePos.x - ViewPort.x) / Doc.tileSet.TileWidth) / ViewPortScale),
-		(f32)i32(((io.MousePos.y - ViewPort.y) / Doc.tileSet.TileHeight) / ViewPortScale)
+	static Tool::Type LastTool = Doc.toolManager.ToolType;
+
+	static ImVec2 MPosRel2Pixel; // mouse position relative to viewport
+	static ImVec2 MPosRel2Tile;  // mouse position relative to tiles
+	MPosRel2Pixel = {
+		io.MousePos.x - Doc.toolManager.ViewPort.x,
+		io.MousePos.y - Doc.toolManager.ViewPort.y,
+	};
+	MPosRel2Tile = {
+		(f32)i32((MPosRel2Pixel.x / Doc.tileSet.TileWidth) / Doc.toolManager.ViewPortScale),
+		(f32)i32((MPosRel2Pixel.y / Doc.tileSet.TileHeight) / Doc.toolManager.ViewPortScale)
 	};
 
 	if (ImGui::IsKeyPressed(ImGuiKey_Space, false)) {
-		LastToolType = Manager::GetToolType();
-		Manager::SetToolType(ToolType::PAN);
+		LastTool = Doc.toolManager.ToolType;
+		Doc.toolManager.ToolType = Tool::Type::PAN;
 	} else if (ImGui::IsKeyReleased(ImGuiKey_Space)) {
-		Manager::SetToolType(LastToolType);
+		Doc.toolManager.ToolType = LastTool;
+	} else if (ImGui::IsKeyPressed(ImGuiKey_B, false)) {
+		Doc.toolManager.ToolType = Tool::Type::BRUSH;
+	} else if (ImGui::IsKeyPressed(ImGuiKey_E, false)) {
+		Doc.toolManager.ToolType = Tool::Type::ERASE;
 	} else if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
 		if (!ImGui::IsAnyItemFocused() && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
-			if (io.MouseWheel > 0)
-				Manager::SetViewPortScale(Manager::GetViewPortScale() + 0.25);
-			else if (io.MouseWheel < 0)
-				Manager::SetViewPortScale(Manager::GetViewPortScale() - 0.25);
+			if (ImGui::IsKeyDown(ImGuiMod_Ctrl)) {
+				if (io.MouseWheel > 0)
+					Doc.toolManager.BrushSize++;
+				else if (io.MouseWheel < 0 && Doc.toolManager.BrushSize > 1)
+					Doc.toolManager.BrushSize--;
+			} else {
+				if (io.MouseWheel > 0)
+					Doc.toolManager.ViewPortScale += 0.25;
+				else if (io.MouseWheel < 0)
+					Doc.toolManager.ViewPortScale -= 0.25;
+
+				Doc.toolManager.UpdateViewportScale();
+			}
 		}
 	}
 
-	bool MouseIsInBounds = MousePosRel.x >= 0 && MousePosRel.y >= 0 &&
-	                       MousePosRel.x < Doc.tileMap.Width && MousePosRel.y < Doc.tileMap.Height;
+	bool MouseIsInBounds = MPosRel2Pixel.x >= 0 && MPosRel2Pixel.y >= 0 &&
+	                       MPosRel2Pixel.x < Doc.toolManager.ViewPort.w &&
+	                       MPosRel2Pixel.y < Doc.toolManager.ViewPort.h;
 
 	if (MouseIsInBounds) {
 		ImGui::SetMouseCursor(ImGuiMouseCursor_None);
-		float BorderPadding = 1.2 * ViewPortScale;
+		float BorderPadding = 1.2 * Doc.toolManager.ViewPortScale;
 		ImVec2 TopLeft = {
-			ViewPort.x + (MousePosRel.x * Doc.tileSet.TileWidth * ViewPortScale) - BorderPadding,
-			ViewPort.y + (MousePosRel.y * Doc.tileSet.TileHeight * ViewPortScale) - BorderPadding
+			Doc.toolManager.ViewPort.x + (MPosRel2Tile.x * Doc.tileSet.TileWidth * Doc.toolManager.ViewPortScale) - BorderPadding,
+			Doc.toolManager.ViewPort.y + (MPosRel2Tile.y * Doc.tileSet.TileHeight * Doc.toolManager.ViewPortScale) - BorderPadding
 		};
 		ImVec2 BottomRight = {
-			TopLeft.x + (Doc.tileSet.TileWidth * ViewPortScale) + (BorderPadding * 2),
-			TopLeft.y + (Doc.tileSet.TileHeight * ViewPortScale) + (BorderPadding * 2)
+			TopLeft.x + (Doc.tileSet.TileWidth * Doc.toolManager.ViewPortScale) + (BorderPadding * 2),
+			TopLeft.y + (Doc.tileSet.TileHeight * Doc.toolManager.ViewPortScale) + (BorderPadding * 2)
 		};
 
 		ImGui::GetForegroundDrawList()->AddRect(TopLeft, BottomRight, 0xFFFFFFFF);
-	}
 
-	if (tType == PAN) {
-		ViewPort.x += io.MouseDelta.x;
-		ViewPort.y += io.MouseDelta.y;
-	} else if (tType == ToolType::PENCIL && ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
-		if (MouseIsInBounds) {
-			i32 tileMapTileIdx = (i32)((MousePosRel.y * Doc.tileMap.Width) + MousePosRel.x);
-			Doc.tileMap.Tiles[tileMapTileIdx].Index = SelectedTile;
-
-			static RectI32 _dirtyArea = { 0, 0, 1, 1 };
-			_dirtyArea.x = (i32)MousePosRel.x;
-			_dirtyArea.y = (i32)MousePosRel.y;
-
-			Doc.Render(_dirtyArea, DocRender, Doc.TileMapWidthPixels(), Doc.TileMapHeightPixels());
-			DocTex->Update((u8*)DocRender);
+		RectI32 dirty;
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+			dirty = Doc.toolManager.OnMouseDown(MPosRel2Pixel.x, MPosRel2Pixel.y, Doc);
+			goto doRender;
 		}
+		if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && io.MouseDelta.x != 0 && io.MouseDelta.y != 0) {
+			dirty = Doc.toolManager.OnMouseMove(MPosRel2Pixel.x, MPosRel2Pixel.y, Doc);
+			goto doRender;
+		}
+		if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
+			dirty = Doc.toolManager.OnMouseUp(MPosRel2Pixel.x, MPosRel2Pixel.y, Doc);
+			goto doRender;
+		}
+		goto skipRender;
+
+doRender:
+			Doc.Render(dirty, DocRender, Doc.TileMapWidthPixels(), Doc.TileMapHeightPixels());
+			DocTex->Update((u8*)DocRender);
+skipRender:
+		void();
 	}
 }
 

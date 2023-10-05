@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "imgui/imgui.h"
 #include "imbase/window.hpp"
 #include "imbase/texture.hpp"
@@ -10,18 +8,19 @@ int main(void) {
 	if (ImBase::Window::Init(700, 500, "asciipen") != 0) {
 		return 1;
 	}
+	ImBase::Window::NewFrame();
+	ImBase::Window::EndFrame();
 	ImBase::Window::SetMaxFPS(60);
 
 	Manager::CreateNew(
 		40, 25, 16, 16, 16, 16,
 		"./data/tilesets/Commodore_64.png"
 	);
-	Manager::SetViewPortScale(1);
 
 	ImGuiIO& io = ImGui::GetIO();
 
-	const ImVec4& ViewPort = Manager::GetViewPort();
-	const Document& Doc = Manager::GetDocument();
+	Document& Doc = Manager::GetDocument();
+	const RectF32& ViewPort = Doc.toolManager.ViewPort;
 	const u8 BgColor[] = { 0x48, 0x3A, 0xAA, 0xFF };
 	ImBase::Texture BgTex(1, 1, (u8*)BgColor);
 
@@ -33,7 +32,7 @@ int main(void) {
 		if (ImGui::BeginMainMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("New", "Ctrl+N")) {
-					std::cout << "New File!" << std::endl;
+					printf("New File!\n");
 				}
 				ImGui::EndMenu();
 			}
@@ -45,18 +44,18 @@ int main(void) {
 		ImDrawList* bgDrwList = ImGui::GetBackgroundDrawList();
 		bgDrwList->AddRect(
 			{ ViewPort.x - 1, ViewPort.y - 1 },
-			{ ViewPort.z + ViewPort.x + 1, ViewPort.w + ViewPort.y + 1 },
+			{ ViewPort.w + ViewPort.x + 1, ViewPort.h + ViewPort.y + 1 },
 			ImGui::GetColorU32(ImGuiCol_Border), 0.0f, 0, 1.0f
 		);
 		bgDrwList->AddImage(
 			reinterpret_cast<ImTextureID>(BgTex.id),
 			{ ViewPort.x, ViewPort.y },
-			{ ViewPort.z + ViewPort.x, ViewPort.w + ViewPort.y }
+			{ ViewPort.w + ViewPort.x, ViewPort.h + ViewPort.y }
 		);
 		bgDrwList->AddImage(
 			Manager::GetDocTex(),
 			{ ViewPort.x, ViewPort.y },
-			{ ViewPort.z + ViewPort.x, ViewPort.w + ViewPort.y }
+			{ ViewPort.w + ViewPort.x, ViewPort.h + ViewPort.y }
 		);
 
 		ImGui::SetNextWindowPos({
@@ -77,8 +76,8 @@ int main(void) {
 			auto _ImageIsHovered = ImGui::IsItemHovered() && ImGui::IsWindowHovered();
 			f32 BorderPadding = 1.2f * TileSetPaletteScale;
 			ImVec2 tilePos = {
-				(f32)(Manager::GetSelectedTile() % Doc.tileSet.TileSetWidth),
-				(f32)(Manager::GetSelectedTile() / Doc.tileSet.TileSetHeight)
+				(f32)(Doc.toolManager.selectedTile.Index % Doc.tileSet.TileSetWidth),
+				(f32)(Doc.toolManager.selectedTile.Index / Doc.tileSet.TileSetHeight)
 			};
 			ImVec2 iRectMin = {
 				_ImageRectMin.x + (tilePos.x * Doc.tileSet.TileWidth * TileSetPaletteScale) - BorderPadding,
@@ -90,7 +89,7 @@ int main(void) {
 			};
 			ImGui::GetWindowDrawList()->AddRect(iRectMin, iRectMax, 0xFF0000FF, 0.0f, 0, 1.2f * TileSetPaletteScale);
 
-			ImGui::Text("Selected: %d, %d (%d)", (i32)tilePos.x, (i32)tilePos.y, Manager::GetSelectedTile());
+			ImGui::Text("Selected: %d, %d (%d)", (i32)tilePos.x, (i32)tilePos.y, Doc.toolManager.selectedTile.Index);
 
 			if (_ImageIsHovered) {
 				ImVec2 _HoveredTilePos = {
@@ -101,9 +100,12 @@ int main(void) {
 
 				ImGui::Text("Hovering: %d, %d (%d)", (i32)_HoveredTilePos.x, (i32)_HoveredTilePos.y, _HoveredTilePos1D);
 				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-					Manager::SetSelectedTile(_HoveredTilePos1D);
+					Doc.toolManager.selectedTile.Index = _HoveredTilePos1D;
 				}
 			}
+
+			ImGui::Text("Tool: %s", Tool::ToolTypeToString(Doc.toolManager.ToolType));
+			ImGui::Text("Brush Size: %d", Doc.toolManager.BrushSize);
 
 			ImGui::End();
 		}

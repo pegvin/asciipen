@@ -25,10 +25,12 @@ using String = std::string;
 template<typename Type>
 using Vector = std::vector<Type>;
 
+struct VectorI32 { i32 x, y; };
+struct VectorF32 { f32 x, y; };
+
 #define GEN_RECT_STRUCT(name, type) \
 	struct name { \
 		type x, y, w, h; \
-		name& operator = (const name& rhs); \
 		bool operator == (const name& rhs) const; \
 		bool operator != (const name& rhs) const; \
 	}

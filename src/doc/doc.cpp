@@ -1,6 +1,8 @@
 #include "doc/doc.hpp"
 
 void Document::Render(const RectI32& dirtyArea, Pixel *pixBuff, u32 pixBuffWidth, u32 pixBuffHeight) {
+	if (dirtyArea.x < 1 && dirtyArea.y < 1 && dirtyArea.w < 1 && dirtyArea.h < 1) return;
+
 	for (i32 y = 0; y < dirtyArea.h; ++y) {
 		for (i32 x = 0; x < dirtyArea.w; ++x) {
 			i32 gridX = dirtyArea.x + x;
