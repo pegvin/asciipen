@@ -42,17 +42,18 @@ int main(void) {
 		}
 
 		// ViewPort Rendering
-		ImGui::GetBackgroundDrawList()->AddRect(
+		ImDrawList* bgDrwList = ImGui::GetBackgroundDrawList();
+		bgDrwList->AddRect(
 			{ ViewPort.x - 1, ViewPort.y - 1 },
 			{ ViewPort.z + ViewPort.x + 1, ViewPort.w + ViewPort.y + 1 },
 			ImGui::GetColorU32(ImGuiCol_Border), 0.0f, 0, 1.0f
 		);
-		ImGui::GetBackgroundDrawList()->AddImage(
+		bgDrwList->AddImage(
 			reinterpret_cast<ImTextureID>(BgTex.id),
 			{ ViewPort.x, ViewPort.y },
 			{ ViewPort.z + ViewPort.x, ViewPort.w + ViewPort.y }
 		);
-		ImGui::GetBackgroundDrawList()->AddImage(
+		bgDrwList->AddImage(
 			Manager::GetDocTex(),
 			{ ViewPort.x, ViewPort.y },
 			{ ViewPort.z + ViewPort.x, ViewPort.w + ViewPort.y }
