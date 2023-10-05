@@ -20,14 +20,15 @@ struct TileSet {
 	void CopyTile(
 		u32 tX, u32 tY,
 		Pixel* destBuffer,
-		u32 dBuffX, u32 dBuffY,
-		u32 dBuffWidth
+		u32 dBuffX, u32 dBuffY, u32 dBuffWidth,
+		Pixel foregroundColor, Pixel backgroundColor
 	);
 	inline void CopyTile(
 		u32 idx, Pixel* destBuffer,
-		u32 dBuffX, u32 dBuffY, u32 dBuffWidth
+		u32 dBuffX, u32 dBuffY, u32 dBuffWidth,
+		Pixel foregroundColor, Pixel backgroundColor
 	) {
-		this->CopyTile(idx % TileSetWidth, idx / TileSetHeight, destBuffer, dBuffX, dBuffY, dBuffWidth);
+		this->CopyTile(idx % TileSetWidth, idx / TileSetHeight, destBuffer, dBuffX, dBuffY, dBuffWidth, foregroundColor, backgroundColor);
 	};
 	void Destroy();
 };

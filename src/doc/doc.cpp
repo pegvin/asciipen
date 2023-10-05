@@ -11,12 +11,14 @@ void Document::Render(const RectI32& dirtyArea, Pixel *pixBuff, u32 pixBuffWidth
 			if (scaledX > pixBuffWidth || scaledY > pixBuffHeight)
 				continue;
 
-			i32 index = tileMap.Tiles[(gridY * tileMap.Width) + gridX].Index;
-			if (index > -1) {
+			Tile t = tileMap.Tiles[(gridY * tileMap.Width) + gridX];
+			if (t.Index > -1) {
 				tileSet.CopyTile(
-					index,
+					t.Index,
 					pixBuff, scaledX, scaledY,
-					pixBuffWidth
+					pixBuffWidth,
+					t.Foreground,
+					t.Background
 				);
 			}
 		}
