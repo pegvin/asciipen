@@ -75,19 +75,20 @@ int main(void) {
 			);
 			auto _ImageRectMin = ImGui::GetItemRectMin();
 			auto _ImageIsHovered = ImGui::IsItemHovered() && ImGui::IsWindowHovered();
+			f32 BorderPadding = 1.2f * TileSetPaletteScale;
 			ImVec2 tilePos = {
 				(f32)(Manager::GetSelectedTile() % Doc.tileSet.TileSetWidth),
 				(f32)(Manager::GetSelectedTile() / Doc.tileSet.TileSetHeight)
 			};
 			ImVec2 iRectMin = {
-				_ImageRectMin.x + (tilePos.x * Doc.tileSet.TileWidth * TileSetPaletteScale),
-				_ImageRectMin.y + (tilePos.y * Doc.tileSet.TileHeight * TileSetPaletteScale)
+				_ImageRectMin.x + (tilePos.x * Doc.tileSet.TileWidth * TileSetPaletteScale) - BorderPadding,
+				_ImageRectMin.y + (tilePos.y * Doc.tileSet.TileHeight * TileSetPaletteScale) - BorderPadding
 			};
 			ImVec2 iRectMax = {
-				iRectMin.x + (Doc.tileSet.TileWidth * TileSetPaletteScale),
-				iRectMin.y + (Doc.tileSet.TileHeight * TileSetPaletteScale)
+				iRectMin.x + (Doc.tileSet.TileWidth * TileSetPaletteScale) + (BorderPadding * 2),
+				iRectMin.y + (Doc.tileSet.TileHeight * TileSetPaletteScale) + (BorderPadding * 2)
 			};
-			ImGui::GetWindowDrawList()->AddRect(iRectMin, iRectMax, 0xFF0000AE, 0.0f, 0, 1.2f);
+			ImGui::GetWindowDrawList()->AddRect(iRectMin, iRectMax, 0xFF0000FF, 0.0f, 0, 1.2f * TileSetPaletteScale);
 
 			ImGui::Text("Selected: %d, %d (%d)", (i32)tilePos.x, (i32)tilePos.y, Manager::GetSelectedTile());
 
