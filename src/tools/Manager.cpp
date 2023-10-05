@@ -141,16 +141,29 @@ void Manager::ProcessFrame() {
 		}
 	}
 
+	bool MouseIsInBounds = MousePosRel.x >= 0 && MousePosRel.y >= 0 &&
+	                       MousePosRel.x < Doc.tileMap.Width && MousePosRel.y < Doc.tileMap.Height;
+
+	if (MouseIsInBounds) {
+		ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+		float BorderPadding = 1.2 * ViewPortScale;
+		ImVec2 TopLeft = {
+			ViewPort.x + (MousePosRel.x * Doc.tileSet.TileWidth * ViewPortScale) - BorderPadding,
+			ViewPort.y + (MousePosRel.y * Doc.tileSet.TileHeight * ViewPortScale) - BorderPadding
+		};
+		ImVec2 BottomRight = {
+			TopLeft.x + (Doc.tileSet.TileWidth * ViewPortScale) + (BorderPadding * 2),
+			TopLeft.y + (Doc.tileSet.TileHeight * ViewPortScale) + (BorderPadding * 2)
+		};
+
+		ImGui::GetForegroundDrawList()->AddRect(TopLeft, BottomRight, 0xFFFFFFFF);
+	}
+
 	if (tType == PAN) {
 		ViewPort.x += io.MouseDelta.x;
 		ViewPort.y += io.MouseDelta.y;
 	} else if (tType == ToolType::PENCIL && ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
-		if (
-			MousePosRel.x >= 0 &&
-			MousePosRel.y >= 0 &&
-			MousePosRel.x < Doc.tileMap.Width &&
-			MousePosRel.y < Doc.tileMap.Height
-		) {
+		if (MouseIsInBounds) {
 			i32 tileMapTileIdx = (i32)((MousePosRel.y * Doc.tileMap.Width) + MousePosRel.x);
 			Doc.tileMap.Tiles[tileMapTileIdx].Index = SelectedTile;
 
