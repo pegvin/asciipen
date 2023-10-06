@@ -106,6 +106,7 @@ int main(void) {
 
 			ImGui::Text("Tool: %s", Tool::ToolTypeToString(Doc.toolManager.ToolType));
 			ImGui::Text("Brush Size: %d", Doc.toolManager.BrushSize);
+			ImGui::Text("Zoom: %.02fx", Doc.toolManager.ViewPortScale);
 
 			ImGui::End();
 		}
