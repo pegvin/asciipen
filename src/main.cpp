@@ -77,7 +77,7 @@ int main(void) {
 			f32 BorderPadding = 1.2f * TileSetPaletteScale;
 			ImVec2 tilePos = {
 				(f32)(Doc.toolManager.selectedTile.Index % Doc.tileSet.TileSetWidth),
-				(f32)(Doc.toolManager.selectedTile.Index / Doc.tileSet.TileSetHeight)
+				(f32)(i32)((f32)Doc.toolManager.selectedTile.Index / Doc.tileSet.TileSetHeight) // cursed casting
 			};
 			ImVec2 iRectMin = {
 				_ImageRectMin.x + (tilePos.x * Doc.tileSet.TileWidth * TileSetPaletteScale) - BorderPadding,

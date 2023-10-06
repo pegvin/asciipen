@@ -110,17 +110,15 @@ void Manager::ProcessFrame() {
 	                       MPosRel2Pixel.y < Doc.toolManager.ViewPort.h;
 
 	if (MouseIsInBounds) {
-		ImGui::SetMouseCursor(ImGuiMouseCursor_None);
-		float BorderPadding = 1.2 * Doc.toolManager.ViewPortScale;
+		// ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 		ImVec2 TopLeft = {
-			Doc.toolManager.ViewPort.x + (MPosRel2Tile.x * Doc.tileSet.TileWidth * Doc.toolManager.ViewPortScale) - BorderPadding,
-			Doc.toolManager.ViewPort.y + (MPosRel2Tile.y * Doc.tileSet.TileHeight * Doc.toolManager.ViewPortScale) - BorderPadding
+			Doc.toolManager.ViewPort.x + (MPosRel2Tile.x * Doc.tileSet.TileWidth * Doc.toolManager.ViewPortScale),
+			Doc.toolManager.ViewPort.y + (MPosRel2Tile.y * Doc.tileSet.TileHeight * Doc.toolManager.ViewPortScale)
 		};
 		ImVec2 BottomRight = {
-			TopLeft.x + (Doc.tileSet.TileWidth * Doc.toolManager.ViewPortScale) + (BorderPadding * 2),
-			TopLeft.y + (Doc.tileSet.TileHeight * Doc.toolManager.ViewPortScale) + (BorderPadding * 2)
+			TopLeft.x + (Doc.tileSet.TileWidth * Doc.toolManager.ViewPortScale),
+			TopLeft.y + (Doc.tileSet.TileHeight * Doc.toolManager.ViewPortScale)
 		};
-
 		ImGui::GetForegroundDrawList()->AddRect(TopLeft, BottomRight, 0xFFFFFFFF);
 
 		RectI32 dirty;
