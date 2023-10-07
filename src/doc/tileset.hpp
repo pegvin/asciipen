@@ -16,7 +16,7 @@ struct TileSet {
 	inline u32 GetHeightPixels() { return TileHeight * TileSetHeight; };
 	inline u32 GetTotalPixels() { return (TileWidth * TileHeight) * (TileSetWidth * TileSetHeight); };
 
-	bool Create_FromFile(const String& filePath, u32 tWidth, u32 tHeight, u32 tSetWidth, u32 tSetHeight);
+	bool Create_FromFile(const String& filePath);
 	void CopyTile(
 		u32 tX, u32 tY,
 		Pixel* destBuffer,

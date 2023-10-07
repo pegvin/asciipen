@@ -7,12 +7,7 @@
 #include "doc/doc.hpp"
 
 namespace Manager {
-	void CreateNew(
-		u16 tileMapWidth, u16 tileMapHeight,
-		u16 tileSetWidth, u16 tileSetHeight,
-		u16 tileWidth, u16 tileHeight,
-		const char* tileSetFilePath
-	);
+	bool CreateNew(u16 tileMapWidth, u16 tileMapHeight, const char* tileSetFilePath);
 	Document& GetDocument();
 	ImTextureID GetDocTex();
 	ImTextureID GetTileSetTex();

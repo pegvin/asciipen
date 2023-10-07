@@ -22,18 +22,11 @@ ImTextureID Manager::GetTileSetTex() {
 	return reinterpret_cast<ImTextureID>(TileSetTex->id);
 }
 
-void Manager::CreateNew(
-	u16 _tileMapWidth, u16 _tileMapHeight,
-	u16 _tileSetWidth, u16 _tileSetHeight,
-	u16 _tileWidth, u16 _tileHeight,
-	const char* tileSetFilePath
-) {
-	if (_tileMapWidth < 1 || _tileMapHeight < 1 || tileSetFilePath == NULL) return;
-
-	Manager::Release();
+bool Manager::CreateNew(u16 _tileMapWidth, u16 _tileMapHeight, const char* tileSetFilePath) {
+	if (_tileMapWidth < 1 || _tileMapHeight < 1 || tileSetFilePath == NULL) return false;
+	if (!Doc.tileSet.Create_FromFile(tileSetFilePath)) return false;
 
 	Doc.tileMap.Create(_tileMapWidth, _tileMapHeight);
-	Doc.tileSet.Create_FromFile(tileSetFilePath, _tileSetWidth, _tileSetHeight, _tileWidth, _tileHeight);
 	DocRender = new Pixel[Doc.TileMapWidthPixels() * Doc.TileMapHeightPixels()];
 	DocTex = new ImBase::Texture(
 		Doc.TileMapWidthPixels(),
@@ -46,7 +39,7 @@ void Manager::CreateNew(
 		nullptr
 	);
 
-	RectI32 _dirtyArea = { 0, 0, _tileMapWidth, _tileHeight };
+	RectI32 _dirtyArea = { 0, 0, _tileMapWidth, _tileMapHeight };
 	Doc.Render(
 		_dirtyArea, DocRender,
 		Doc.TileMapWidthPixels(),
@@ -61,6 +54,8 @@ void Manager::CreateNew(
 	ImGuiIO& io = ImGui::GetIO();
 	Doc.toolManager.ViewPort.x = (io.DisplaySize.x / 2) - (Doc.toolManager.ViewPort.x / 2);
 	Doc.toolManager.ViewPort.y = (io.DisplaySize.y / 2) - (Doc.toolManager.ViewPort.y / 2);
+
+	return true;
 }
 
 void Manager::ProcessFrame() {

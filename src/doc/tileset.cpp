@@ -1,19 +1,69 @@
 #include "doc/tileset.hpp"
 #include "stb_image.h"
 
-bool TileSet::Create_FromFile(const String& filePath, u32 tWidth, u32 tHeight, u32 tSetWidth, u32 tSetHeight) {
-	i32 w, h, channels;
-	u8* data = stbi_load(filePath.c_str(), &w, &h, &channels, 4);
+#include "microtar.h"
+#include "SimpleIni.h"
 
-	if (w < 1 || h < 1 || channels < 4) {
-		printf("Failed to read TileSet from: %s\n", filePath.c_str());
+bool TileSet::Create_FromFile(const String& filePath) {
+	mtar_t tArchive;
+	mtar_header_t tHeader_infoini;
+	mtar_header_t tHeader_tilesetpng;
+
+	if (mtar_open(&tArchive, filePath.c_str(), "r") != MTAR_ESUCCESS) {
+		printf("Failed to open file: %s\n", filePath.c_str());
 		return false;
 	}
 
-	TileSetWidth = tSetWidth;
-	TileSetHeight = tSetHeight;
-	TileWidth = tWidth;
-	TileHeight = tHeight;
+	if (mtar_find(&tArchive, "info.ini", &tHeader_infoini) != MTAR_ESUCCESS) {
+		printf("Failed to find 'info.ini' inside archive\n");
+		return false;
+	}
+	char* infoTxt = (char*)malloc(tHeader_infoini.size);
+	if (mtar_read_data(&tArchive, infoTxt, tHeader_infoini.size) != MTAR_ESUCCESS) {
+		printf("Failed to read 'info.ini' inside archive\n");
+		return false;
+	}
+
+	if (mtar_find(&tArchive, "tileset.png", &tHeader_tilesetpng) != MTAR_ESUCCESS) {
+		printf("Failed to find 'info.ini' inside archive\n");
+		return false;
+	}
+	u8* tilesetPng = (u8*)malloc(tHeader_tilesetpng.size);
+	if (mtar_read_data(&tArchive, tilesetPng, tHeader_tilesetpng.size) != MTAR_ESUCCESS) {
+		printf("Failed to read 'info.ini' inside archive\n");
+		return false;
+	}
+
+	if (mtar_close(&tArchive) != MTAR_ESUCCESS) {
+		printf("Error\n");
+		return false;
+	}
+
+	CSimpleIniA ini;
+	ini.SetUnicode();
+
+	SI_Error rc = ini.LoadData(infoTxt, tHeader_infoini.size);
+	if (rc < 0) {
+		printf("Error\n");
+		return false;
+	}
+
+	TileWidth = ini.GetLongValue("info", "TileWidth");
+	TileHeight = ini.GetLongValue("info", "TileHeight");
+	TileSetWidth = ini.GetLongValue("info", "TileSetWidth");
+	TileSetHeight = ini.GetLongValue("info", "TileSetHeight");
+
+	free(infoTxt);
+
+	i32 w, h, channels;
+	u8* data = stbi_load_from_memory(tilesetPng, tHeader_tilesetpng.size, &w, &h, &channels, 4);
+
+	free(tilesetPng);
+
+	if (w < 1 || h < 1 || channels < 4 || data == NULL) {
+		printf("Failed to read TileSet from: %s\n", filePath.c_str());
+		return false;
+	}
 
 	Pixels = new Pixel[(TileWidth * TileHeight) * (TileSetWidth * TileSetHeight)];
 

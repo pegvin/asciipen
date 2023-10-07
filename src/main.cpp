@@ -12,10 +12,10 @@ int main(void) {
 	ImBase::Window::EndFrame();
 	ImBase::Window::SetMaxFPS(60);
 
-	Manager::CreateNew(
-		40, 25, 16, 16, 16, 16,
-		"./data/tilesets/Commodore_64.png"
-	);
+	if (!Manager::CreateNew(40, 25, "./data/tilesets/Commodore_64.tar")) {
+		ImBase::Window::Destroy();
+		return 1;
+	}
 
 	ImGuiIO& io = ImGui::GetIO();
 
