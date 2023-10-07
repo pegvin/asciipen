@@ -21,8 +21,8 @@ int main(void) {
 
 	Document& Doc = Manager::GetDocument();
 	const RectF32& ViewPort = Doc.toolManager.ViewPort;
-	const u8 BgColor[] = { 0x48, 0x3A, 0xAA, 0xFF };
-	ImBase::Texture BgTex(1, 1, (u8*)BgColor);
+	Pixel BgColor = { 0x48, 0x3A, 0xAA, 0xFF };
+	ImBase::Texture BgTex(1, 1, &BgColor.r);
 
 	while (!ImBase::Window::ShouldClose()) {
 		ImBase::Window::NewFrame();
