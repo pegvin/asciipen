@@ -55,6 +55,12 @@ target_link_libraries(asciipen PUBLIC imbase)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/stb/)
 target_link_libraries(asciipen PUBLIC stb_image)
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/microtar/)
+target_link_libraries(asciipen PUBLIC rxi_microtar)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/simpleini/)
+target_link_libraries(asciipen PUBLIC SimpleIni)
+
 target_include_directories(asciipen PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/)
 
 # Use Address Sanitizer in Debug Mode
