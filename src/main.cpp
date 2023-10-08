@@ -28,7 +28,7 @@ int main(void) {
 		ImBase::Window::NewFrame();
 		Manager::ProcessFrame();
 
-		ImVec2 MainMenuSize;
+		static ImVec2 MainMenuSize;
 		if (ImGui::BeginMainMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("New", "Ctrl+N")) {
@@ -40,37 +40,16 @@ int main(void) {
 			ImGui::EndMainMenuBar();
 		}
 
-		// ViewPort Rendering
-		ImDrawList* bgDrwList = ImGui::GetBackgroundDrawList();
-		bgDrwList->AddRect(
-			{ ViewPort.x - 1, ViewPort.y - 1 },
-			{ ViewPort.w + ViewPort.x + 1, ViewPort.h + ViewPort.y + 1 },
-			ImGui::GetColorU32(ImGuiCol_Border), 0.0f, 0, 1.0f
-		);
-		bgDrwList->AddImage(
-			reinterpret_cast<ImTextureID>(BgTex.id),
-			{ ViewPort.x, ViewPort.y },
-			{ ViewPort.w + ViewPort.x, ViewPort.h + ViewPort.y }
-		);
-		bgDrwList->AddImage(
-			Manager::GetDocTex(),
-			{ ViewPort.x, ViewPort.y },
-			{ ViewPort.w + ViewPort.x, ViewPort.h + ViewPort.y }
-		);
-
-		ImGui::SetNextWindowPos({
-			io.DisplaySize.x - 405.0f, MainMenuSize.y
-		});
-		ImGui::SetNextWindowSize({
-			405.0f, io.DisplaySize.y - MainMenuSize.y
-		});
-		if (ImGui::Begin("TileSet Palette", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus)) {
-			static float TileSetPaletteScale = 1.5;
-			ImGui::SliderFloat("Scale", &TileSetPaletteScale, 0.25f, 2.5f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		static ImVec2 SideWinSize;
+		ImGui::SetNextWindowPos({ 0, MainMenuSize.y });
+		ImGui::SetNextWindowSize({ 405.0f, io.DisplaySize.y - MainMenuSize.y }, ImGuiCond_Once);
+		ImGui::SetNextWindowSizeConstraints({ 120, -1 }, { io.DisplaySize.x / 2, -1 });
+		if (ImGui::Begin("SideWindow", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse)) {
+			const float TileSetPaletteScale = ImGui::GetContentRegionAvail().x / Doc.tileSet.GetWidthPixels();
 
 			ImGui::Image(
 				Manager::GetTileSetTex(),
-				{ 256.0f * TileSetPaletteScale, 256.0f * TileSetPaletteScale }
+				{ Doc.tileSet.GetWidthPixels() * TileSetPaletteScale, Doc.tileSet.GetHeightPixels() * TileSetPaletteScale }
 			);
 			auto _ImageRectMin = ImGui::GetItemRectMin();
 			auto _ImageIsHovered = ImGui::IsItemHovered() && ImGui::IsWindowHovered();
@@ -107,6 +86,31 @@ int main(void) {
 			ImGui::Text("Tool: %s", Tool::ToolTypeToString(Doc.toolManager.ToolType));
 			ImGui::Text("Brush Size: %d", Doc.toolManager.BrushSize);
 			ImGui::Text("Zoom: %.02fx", Doc.toolManager.ViewPortScale);
+
+			SideWinSize = ImGui::GetWindowSize();
+			ImGui::End();
+		}
+
+		ImGui::SetNextWindowPos({ SideWinSize.x, MainMenuSize.y });
+		ImGui::SetNextWindowSize({ io.DisplaySize.x - SideWinSize.x, io.DisplaySize.y - MainMenuSize.y });
+		if (ImGui::Begin("MainWindow", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse)) {
+			// ViewPort Rendering
+			ImDrawList* winDrwList = ImGui::GetWindowDrawList();
+			winDrwList->AddRect(
+				{ ViewPort.x - 1, ViewPort.y - 1 },
+				{ ViewPort.w + ViewPort.x + 1, ViewPort.h + ViewPort.y + 1 },
+				ImGui::GetColorU32(ImGuiCol_Border), 0.0f, 0, 1.0f
+			);
+			winDrwList->AddImage(
+				reinterpret_cast<ImTextureID>(BgTex.id),
+				{ ViewPort.x, ViewPort.y },
+				{ ViewPort.w + ViewPort.x, ViewPort.h + ViewPort.y }
+			);
+			winDrwList->AddImage(
+				Manager::GetDocTex(),
+				{ ViewPort.x, ViewPort.y },
+				{ ViewPort.w + ViewPort.x, ViewPort.h + ViewPort.y }
+			);
 
 			ImGui::End();
 		}
