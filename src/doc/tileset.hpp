@@ -7,25 +7,25 @@
 
 struct TileSet {
 	Pixel* Pixels = nullptr; // pixel data of TileSet
-	u32 TileWidth = 0;
-	u32 TileHeight = 0;
-	u32 TileSetWidth = 0;
-	u32 TileSetHeight = 0;
+	i32 TileWidth = 0;
+	i32 TileHeight = 0;
+	i32 TileSetWidth = 0;
+	i32 TileSetHeight = 0;
 
-	inline u32 GetWidthPixels() { return TileWidth * TileSetWidth; };
-	inline u32 GetHeightPixels() { return TileHeight * TileSetHeight; };
-	inline u32 GetTotalPixels() { return (TileWidth * TileHeight) * (TileSetWidth * TileSetHeight); };
+	inline i32 GetWidthPixels() { return TileWidth * TileSetWidth; };
+	inline i32 GetHeightPixels() { return TileHeight * TileSetHeight; };
+	inline i32 GetTotalPixels() { return (TileWidth * TileHeight) * (TileSetWidth * TileSetHeight); };
 
 	bool Create_FromFile(const String& filePath);
 	void CopyTile(
-		u32 tX, u32 tY,
+		i32 tX, i32 tY,
 		Pixel* destBuffer,
-		u32 dBuffX, u32 dBuffY, u32 dBuffWidth,
+		i32 dBuffX, i32 dBuffY, i32 dBuffWidth,
 		Pixel foregroundColor, Pixel backgroundColor
 	);
 	inline void CopyTile(
-		u32 idx, Pixel* destBuffer,
-		u32 dBuffX, u32 dBuffY, u32 dBuffWidth,
+		i32 idx, Pixel* destBuffer,
+		i32 dBuffX, i32 dBuffY, i32 dBuffWidth,
 		Pixel foregroundColor, Pixel backgroundColor
 	) {
 		this->CopyTile(idx % TileSetWidth, idx / TileSetHeight, destBuffer, dBuffX, dBuffY, dBuffWidth, foregroundColor, backgroundColor);

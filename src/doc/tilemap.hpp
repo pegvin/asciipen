@@ -12,11 +12,11 @@ struct Tile {
 };
 
 struct TileMap {
-	u32   Width  = 0;       // Width of the Tile Map
-	u32   Height = 0;       // Height of the Tile Map
+	i32   Width  = 0;       // Width of the Tile Map
+	i32   Height = 0;       // Height of the Tile Map
 	Tile* Tiles  = nullptr; // Array of Tiles of the Tile Map
 
-	bool Create(u32 tilemapWidth, u32 tilemapHeight);
+	bool Create(i32 tilemapWidth, i32 tilemapHeight);
 	void Destroy();
 };
 

@@ -22,7 +22,7 @@ ImTextureID Manager::GetTileSetTex() {
 	return reinterpret_cast<ImTextureID>(TileSetTex->id);
 }
 
-bool Manager::CreateNew(u16 _tileMapWidth, u16 _tileMapHeight, const char* tileSetFilePath) {
+bool Manager::CreateNew(i32 _tileMapWidth, i32 _tileMapHeight, const char* tileSetFilePath) {
 	if (_tileMapWidth < 1 || _tileMapHeight < 1 || tileSetFilePath == NULL) return false;
 	if (!Doc.tileSet.Create_FromFile(tileSetFilePath)) return false;
 

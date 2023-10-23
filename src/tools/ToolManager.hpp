@@ -27,7 +27,7 @@ namespace Tool {
 	}
 
 	struct Manager {
-		u32 BrushSize = 5;
+		i32 BrushSize = 5;
 		bool isBrushCircle = true;
 		Tool::Type ToolType = Tool::Type::BRUSH;
 		Tile selectedTile = { 0 };

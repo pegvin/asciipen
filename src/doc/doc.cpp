@@ -1,6 +1,6 @@
 #include "doc/doc.hpp"
 
-void Document::Render(const RectI32& dirtyArea, Pixel *pixBuff, u32 pixBuffWidth, u32 pixBuffHeight) {
+void Document::Render(const RectI32& dirtyArea, Pixel *pixBuff, i32 pixBuffWidth, i32 pixBuffHeight) {
 	if (dirtyArea.x < 1 && dirtyArea.y < 1 && dirtyArea.w < 1 && dirtyArea.h < 1) return;
 
 	for (i32 y = 0; y < dirtyArea.h; ++y) {
@@ -8,8 +8,8 @@ void Document::Render(const RectI32& dirtyArea, Pixel *pixBuff, u32 pixBuffWidth
 			i32 gridX = dirtyArea.x + x;
 			i32 gridY = dirtyArea.y + y;
 
-			u32 scaledX = gridX * tileSet.TileWidth;
-			u32 scaledY = gridY * tileSet.TileHeight;
+			i32 scaledX = gridX * tileSet.TileWidth;
+			i32 scaledY = gridY * tileSet.TileHeight;
 			if (scaledX > pixBuffWidth || scaledY > pixBuffHeight)
 				continue;
 
@@ -23,8 +23,8 @@ void Document::Render(const RectI32& dirtyArea, Pixel *pixBuff, u32 pixBuffWidth
 					t.Background
 				);
 			} else { // clear the tile
-				for (u32 y = 0; y < tileSet.TileHeight; ++y) {
-					for (u32 x = 0; x < tileSet.TileWidth; ++x) {
+				for (i32 y = 0; y < tileSet.TileHeight; ++y) {
+					for (i32 x = 0; x < tileSet.TileWidth; ++x) {
 						pixBuff[((scaledY + y) * pixBuffWidth) + (scaledX + x)] = 0x00U;
 					}
 				}

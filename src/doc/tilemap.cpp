@@ -1,7 +1,7 @@
 #include "doc/tilemap.hpp"
 
-bool TileMap::Create(u32 tilemapWidth, u32 tilemapHeight) {
-	if (tilemapWidth == 0 || tilemapHeight == 0) return false;
+bool TileMap::Create(i32 tilemapWidth, i32 tilemapHeight) {
+	if (tilemapWidth < 1 || tilemapHeight < 1) return false;
 
 	Tiles = new Tile[tilemapWidth * tilemapHeight];
 	if (Tiles == nullptr) {

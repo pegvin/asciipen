@@ -15,10 +15,10 @@ struct Document {
 	TileSet tileSet;
 	Tool::Manager toolManager;
 
-	void Render(const RectI32& dirty, Pixel* pixBuff, u32 pixBuffWidth, u32 pixBuffHeight);
+	void Render(const RectI32& dirty, Pixel* pixBuff, i32 pixBuffWidth, i32 pixBuffHeight);
 
-	inline u32 TileMapWidthPixels() { return tileMap.Width * tileSet.TileWidth; };
-	inline u32 TileMapHeightPixels() { return tileMap.Height * tileSet.TileHeight; };
+	inline i32 TileMapWidthPixels() { return tileMap.Width * tileSet.TileWidth; };
+	inline i32 TileMapHeightPixels() { return tileMap.Height * tileSet.TileHeight; };
 };
 
 #endif // ASCIIPEN_DOC_DOC_HPP_INCLUDED_

@@ -93,17 +93,17 @@ void TileSet::Destroy() {
 }
 
 void TileSet::CopyTile(
-	u32 tX, u32 tY,
+	i32 tX, i32 tY,
 	Pixel* destBuffer,
-	u32 dBuffX, u32 dBuffY,
-	u32 dBuffWidth,
+	i32 dBuffX, i32 dBuffY,
+	i32 dBuffWidth,
 	Pixel fgColor,
 	Pixel bgColor
 ) {
-	for (u32 y = 0; y < TileHeight; ++y) {
-		for (u32 x = 0; x < TileWidth; ++x) {
-			u32 scaledX = (tX * TileWidth) + x;
-			u32 scaledY = (tY * TileHeight) + y;
+	for (i32 y = 0; y < TileHeight; ++y) {
+		for (i32 x = 0; x < TileWidth; ++x) {
+			i32 scaledX = (tX * TileWidth) + x;
+			i32 scaledY = (tY * TileHeight) + y;
 			bool isPixelOn = Pixels[(scaledY * this->GetWidthPixels()) + scaledX] == 0xFFFFFFFF;
 			destBuffer[((dBuffY + y) * dBuffWidth) + (dBuffX + x)] = isPixelOn ? fgColor : bgColor;
 		}
