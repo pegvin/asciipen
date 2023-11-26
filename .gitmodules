@@ -6,4 +6,4 @@
 	url = https://github.com/pegvin/microtar
 [submodule "third_party/simpleini"]
 	path = third_party/simpleini
-	url = https://github.com/csprite/simpleini
+	url = https://github.com/brofield/simpleini
