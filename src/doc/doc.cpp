@@ -1,5 +1,22 @@
 #include "doc/doc.hpp"
 
+bool Document::CreateNew(i32 DocumentWidth, i32 DocumentHeight, const char* tileSetPath) {
+	if (DocumentWidth < 1 || DocumentHeight < 1 || tileSetPath == NULL) return false;
+	if (tileSet.Create_FromFile(tileSetPath) == false) return false;
+
+	if (tileMap.Create(DocumentWidth, DocumentHeight) == false) {
+		tileSet.Destroy();
+		return false;
+	}
+
+	return true;
+}
+
+void Document::Destroy() {
+	tileMap.Destroy();
+	tileSet.Destroy();
+}
+
 void Document::Render(const RectI32& dirtyArea, Pixel *pixBuff, i32 pixBuffWidth, i32 pixBuffHeight) {
 	if (dirtyArea.x < 1 && dirtyArea.y < 1 && dirtyArea.w < 1 && dirtyArea.h < 1) return;
 

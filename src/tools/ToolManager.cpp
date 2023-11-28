@@ -10,8 +10,8 @@ RectI32 Manager::OnMouseDown(i32 x, i32 y, Document& doc) {
 	MousePosLast = { x, y };
 
 	VectorF32 MousePosRel = {
-		((f32)x / (f32)doc.tileSet.TileWidth) / (f32)doc.toolManager.ViewPortScale,
-		((f32)y / (f32)doc.tileSet.TileHeight) / (f32)doc.toolManager.ViewPortScale
+		((f32)x / (f32)doc.tileSet.TileWidth) / (f32)ViewPortScale,
+		((f32)y / (f32)doc.tileSet.TileHeight) / (f32)ViewPortScale
 	};
 
 	switch (ToolType) {
@@ -37,8 +37,8 @@ RectI32 Manager::OnMouseMove(i32 x, i32 y, Document& doc) {
 	RectI32 dirty = { -1, -1, -1, -1 };
 
 	VectorF32 MousePosRel = {
-		((f32)x / (f32)doc.tileSet.TileWidth) / (f32)doc.toolManager.ViewPortScale,
-		((f32)y / (f32)doc.tileSet.TileHeight) / (f32)doc.toolManager.ViewPortScale
+		((f32)x / (f32)doc.tileSet.TileWidth) / (f32)ViewPortScale,
+		((f32)y / (f32)doc.tileSet.TileHeight) / (f32)ViewPortScale
 	};
 
 	switch (ToolType) {
@@ -67,8 +67,8 @@ RectI32 Manager::OnMouseUp(i32 x, i32 y, Document& doc) {
 	RectI32 dirty = { -1, -1, -1, -1 };
 
 	VectorF32 MousePosRel = {
-		((f32)x / (f32)doc.tileSet.TileWidth) / (f32)doc.toolManager.ViewPortScale,
-		((f32)y / (f32)doc.tileSet.TileHeight) / (f32)doc.toolManager.ViewPortScale
+		((f32)x / (f32)doc.tileSet.TileWidth) / (f32)ViewPortScale,
+		((f32)y / (f32)doc.tileSet.TileHeight) / (f32)ViewPortScale
 	};
 
 	switch (ToolType) {

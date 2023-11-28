@@ -7,13 +7,15 @@
 #include "types.hpp"
 #include "doc/tilemap.hpp"
 #include "doc/tileset.hpp"
-#include "tools/ToolManager.hpp"
 
 struct Document {
 	String filePath;
 	TileMap tileMap;
 	TileSet tileSet;
-	Tool::Manager toolManager;
+
+	// returns true on success
+	bool CreateNew(i32 DocumentWidth, i32 DocumentHeight, const char* tileSetPath);
+	void Destroy();
 
 	void Render(const RectI32& dirty, Pixel* pixBuff, i32 pixBuffWidth, i32 pixBuffHeight);
 
