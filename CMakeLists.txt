@@ -69,6 +69,7 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
 		target_compile_options(asciipen PRIVATE -fsanitize=address)
 		target_link_options(asciipen PRIVATE -fsanitize=address)
 	endif()
+	target_compile_definitions(asciipen PRIVATE -DDEBUG_BUILD)
 endif()
 
 target_compile_options(asciipen PRIVATE

@@ -107,6 +107,8 @@ int main(void) {
 			goto skipRender;
 
 doRender:
+			if (!(dirty.x > 0 && dirty.y > 0 && dirty.w > 0 && dirty.h > 0)) goto skipRender;
+
 			editorDoc.doc.Render(dirty, editorDoc.render, editorDoc.doc.TileMapWidthPixels(), editorDoc.doc.TileMapHeightPixels());
 			editorDoc.renderTex->Update((u8*)editorDoc.render);
 skipRender:
@@ -125,9 +127,12 @@ skipRender:
 				}
 				ImGui::EndMenu();
 			}
-			if (ImGui::BeginMenu("Edit")) {
-				if (ImGui::MenuItem("Center Document")) {
-					CenterDocument(editorDoc);
+			if (ImGui::BeginMenu("View")) {
+				if (ImGui::BeginMenu("Viewport")) {
+					if (ImGui::MenuItem("Center")) {
+						CenterDocument(editorDoc);
+					}
+					ImGui::EndMenu();
 				}
 				ImGui::EndMenu();
 			}
@@ -182,6 +187,10 @@ skipRender:
 			ImGui::Text("Tool: %s", Tool::ToolTypeToString(editorDoc.toolManager.ToolType));
 			ImGui::Text("Brush Size: %d", editorDoc.toolManager.BrushSize);
 			ImGui::Text("Zoom: %.02fx", editorDoc.toolManager.ViewPortScale);
+
+#ifdef DEBUG_BUILD
+			ImGui::Text("FPS: %.1f (%.2f ms)", io.Framerate, io.DeltaTime * 1000);
+#endif
 
 			SideWinSize = ImGui::GetWindowSize();
 			ImGui::End();
